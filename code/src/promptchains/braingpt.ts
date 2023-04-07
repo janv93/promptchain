@@ -6,7 +6,9 @@ export default class BrainGpt extends BaseController {
 
   public async chain(prompt): Promise<string> {
     this.openAi.clearChatMessages();
-    return this.generateContext(prompt);
+    const res = await this.generateContext(prompt);
+    console.log(this.openAi.messages);
+    return res;
   }
 
   private async generateContext(prompt: string): Promise<string> {
