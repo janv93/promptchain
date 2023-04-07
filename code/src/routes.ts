@@ -5,7 +5,7 @@ const router = Router();
 const brainGpt = new BrainGpt();
 
 router.post('/braingpt', async (req: Request, res: Response) => {
-  const response = await brainGpt.run(req.body.prompt);
+  const response = await brainGpt.chain(req.body.prompt);
   res.send(response);
 });
 

@@ -1,7 +1,17 @@
+import OpenAi from '../apis/openai';
 import BaseController from '../base-controller';
 
 export default class BrainGpt extends BaseController {
-  public async run(prompt): Promise<string> {
-    return prompt;
+  private openAi = new OpenAi();
+
+  public async chain(prompt): Promise<string> {
+    this.openAi.clearChatMessages();
+    return this.generateContext(prompt);
+  }
+
+  private generateContext(prompt: string): string {
+    const message = `Generate a list of information that would be helpful in solving this prompt:\n${prompt}`;
+    this.openAi.addChatMessage(message);
+    this.openAi.postCompletionChat();
   }
 }
