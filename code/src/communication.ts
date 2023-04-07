@@ -29,7 +29,7 @@ export default class Communication {
 
   protected async getListLength(list: string): Promise<number> {
     const message = `${list}\n\n
-Return the number of items in this list as a number, nothing else.`;
+Return the number of items in this list as a number. Only output the number.`;
 
     const messages = [
       { role: 'system', content: 'You are an AI language model.' },

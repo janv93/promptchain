@@ -54,6 +54,7 @@ Now, I want you to generate a list of approaches on how to find a solution for t
 
   private async doApproaches(): Promise<void> {
     const length = await this.getListLength(this.messages.at(-1).content);
+    console.log(length)
 
     for (let i = 0; i < length; i++) {
       // generate approaches
