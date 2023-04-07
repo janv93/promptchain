@@ -29,7 +29,7 @@ export default class OpenAi extends BaseController {
   }
 
   // https://platform.openai.com/docs/api-reference/chat
-  public async postCompletionChat(): Promise<number> {
+  public async postCompletionChat(): Promise<string> {
     const url = this.baseUrl + '/chat/completions';
 
     const body = {
@@ -50,7 +50,7 @@ export default class OpenAi extends BaseController {
       return res.data.choices[0].message.content;
     } catch (err) {
       this.handleError(err);
-      return 0;
+      return '';
     }
   }
 }

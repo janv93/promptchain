@@ -9,9 +9,9 @@ export default class BrainGpt extends BaseController {
     return this.generateContext(prompt);
   }
 
-  private generateContext(prompt: string): string {
+  private async generateContext(prompt: string): Promise<string> {
     const message = `Generate a list of information that would be helpful in solving this prompt:\n${prompt}`;
     this.openAi.addChatMessage(message);
-    this.openAi.postCompletionChat();
+    return this.openAi.postCompletionChat();
   }
 }
