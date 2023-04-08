@@ -2,13 +2,16 @@ import Communication from '../communication';
 
 export default class BrainGpt extends Communication {
   private initialPrompt: string;
+  private context: string;
+  private approaches: string;
 
   constructor() {
     super();
 
     this.systemMessage = `You are an AI language model using the ${this.openAi.model} model from OpenAI API.\n
-You knowledge cutoff is September 2021. You do not have access to information later than that.
+Your knowledge cutoff is September 2021. You do not have access to information later than that.
 You are part of an algorithm which tries to solve any, even the most complex prompt using vector databases, chain of thought, reflection and correction and other techniques.\n
+The goal is to solve the prompt just using your knowledge, you are not given tools. Consider this at every step.\n
 Each step of this conversation tries to enhance the initial prompt.`;
   }
 
@@ -18,7 +21,7 @@ Each step of this conversation tries to enhance the initial prompt.`;
     await this.generateContextIdeas();
     await this.generateContext();
     await this.generateApproaches();
-    await this.doApproaches();
+    await this.executeApproaches();
     const answer = this.lastMessage();
     this.resetChatMessages();
     return answer;
@@ -37,6 +40,7 @@ Now apply similar enhancing to the prompt. Only output the numerated list, nothi
   private async generateContext(): Promise<void> {
     const message = `Now add the actual information for each bullet point.`;
     await this.chat(message);
+    this.context = this.lastMessage();
   }
 
   private async generateApproaches(): Promise<void> {
@@ -50,14 +54,19 @@ ${lastMessage}\n\n
 Now, I want you to generate a list of approaches on how to find a solution for the prompt. Only output the numerated list, nothing before or after the list.`
 
     await this.chat(message);
+    this.approaches = this.lastMessage();
   }
 
-  private async doApproaches(): Promise<void> {
-    const length = await this.getListLength(this.messages.at(-1).content);
-    console.log(length)
+  private async executeApproaches(): Promise<void> {
+    console.log(this.messages);
+    const last = this.lastMessage();
+    const length = await this.getListLength(last);
+    const promises = [];
 
     for (let i = 0; i < length; i++) {
-      // generate approaches
+      promises.push(this.getStep(last, i + 1 ));
     }
+
+    const steps = await Promise.all(promises);
   }
 }
