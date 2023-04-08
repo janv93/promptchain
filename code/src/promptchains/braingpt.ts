@@ -67,6 +67,11 @@ Now, I want you to generate a list of approaches on how to find a solution for t
       promises.push(this.getStep(last, i + 1 ));
     }
 
-    const steps = await Promise.all(promises);
+    const approaches = await Promise.all(promises);
+    const approachesWithSteps = await Promise.all(approaches.map(a => this.generateStepsRecursive(a)));
+  }
+
+  private async generateStepsRecursive(approach: string) {
+
   }
 }
