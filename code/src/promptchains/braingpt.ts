@@ -1,9 +1,10 @@
 import Communication from '../communication';
+import { Approach } from '../interfaces';
 
 export default class BrainGpt extends Communication {
   private initialPrompt: string;
   private context: string;
-  private approaches: string;
+  private approaches: Approach[];
 
   constructor() {
     super();
@@ -21,7 +22,7 @@ Each step of this conversation tries to enhance the initial prompt.`;
     await this.generateContextIdeas();
     await this.generateContext();
     await this.generateApproaches();
-    await this.executeApproaches();
+    await this.generateSteps();
     const answer = this.lastMessage();
     this.resetChatMessages();
     return answer;
@@ -44,34 +45,46 @@ Now apply similar enhancing to the prompt. Only output the numerated list, nothi
   }
 
   private async generateApproaches(): Promise<void> {
-    const lastMessage = this.lastMessage();
     this.resetChatMessages();
 
     const message = `You are being asked the following prompt:\n
 "${this.initialPrompt}"\n
 You were given the following context information:\n
-${lastMessage}\n\n
+${this.context}\n\n
 Now, I want you to generate a list of approaches on how to find a solution for the prompt. Only output the numerated list, nothing before or after the list.`
 
     await this.chat(message);
-    this.approaches = this.lastMessage();
-  }
-
-  private async executeApproaches(): Promise<void> {
-    console.log(this.messages);
     const last = this.lastMessage();
     const length = await this.getListLength(last);
     const promises = [];
 
     for (let i = 0; i < length; i++) {
-      promises.push(this.getStep(last, i + 1 ));
+      promises.push(this.getStep(last, i + 1));
     }
 
     const approaches = await Promise.all(promises);
-    const approachesWithSteps = await Promise.all(approaches.map(a => this.generateStepsRecursive(a)));
+    this.approaches = approaches.map(a => ({ approach: a }));
   }
 
-  private async generateStepsRecursive(approach: string) {
+  private async generateSteps() {
+    const approachesWithSteps = await Promise.all(this.approaches.map(a => this.generateApproachSteps(a)));
+    console.log(approachesWithSteps);
+  }
 
+  private async generateApproachSteps(approach: Approach): Promise<Approach> {
+    const message = `To solve the prompt "${this.initialPrompt}" the following approach is given:\n
+"${approach.approach}"\n\n
+Generate a numerated list with steps for this approach. Only output the numerated list, nothing before or after the list.`;
+
+    const res = await this.chatSingle(message);
+    const length = await this.getListLength(res);
+    const promises = [];
+
+    for (let i = 0; i < length; i++) {
+      promises.push(this.getStep(res, i + 1));
+    }
+
+    approach.steps = await Promise.all(promises);
+    return approach;
   }
 }
