@@ -22,11 +22,8 @@ Each step of this conversation tries to enhance the initial prompt and get close
     await this.generateContextIdeas();
     await this.generateContext();
     await this.generateApproaches();
-    console.log(this.approaches)
     await this.filterApproaches();
-    console.log(this.approaches)
-
-    //await this.generateSteps();
+    await this.generateSteps();
     const answer = this.lastMessage();
     this.resetChatMessages();
     return answer;
@@ -96,7 +93,7 @@ Generate a numerated list with steps for this approach. Only output the numerate
       await this.generateSubsteps(approach, approach.steps[i], [i]);
     }
 
-    //console.log(this.createNumberedListString(approach.steps))
+    console.log(this.createNumberedListString(approach.steps))
 
     return approach;
   }
