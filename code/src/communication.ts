@@ -1,4 +1,5 @@
 import OpenAi from './apis/openai';
+import { Step } from './interfaces';
 
 export default class Communication {
   protected openAi = new OpenAi();
@@ -21,7 +22,7 @@ export default class Communication {
   protected async chatSingle(message: string): Promise<string> {
     const messages = [
       { role: 'system', content: this.systemMessage },
-      { role: 'user' , content: message }
+      { role: 'user', content: message }
     ];
 
     return this.openAi.postCompletionChat(messages);
@@ -37,28 +38,23 @@ export default class Communication {
     ];
   }
 
-  protected async getListLength(list: string): Promise<number> {
-    const message = `${list}\n\n
-Return the number of items in this list as a number. Only output the number, nothing else.`;
-
-    const messages = [
-      { role: 'system', content: 'You are an AI language model.' },
-      { role: 'user', content: message }
-    ];
-
-    const res = await this.openAi.postCompletionChat(messages);
-    return parseInt(res.match(/\d+/)?.[0], 10);
+  protected getSteps(list: string): Array<string> {
+    const regex = /\d\.\s+|\n+/g;
+    return list.split(regex).filter(step => step.trim() !== '');
   }
 
-  protected async getStep(list: string, step: number): Promise<string> {
-    const message = `${list}\n\n
-Return step ${step} of this list without the leading number. Only output the step, nothing else`;
+  protected createNumberedListString(steps: Step[], prefix = ''): string {
+    let result = '';
 
-    const messages = [
-      { role: 'system', content: 'You are an AI language model.' },
-      { role: 'user', content: message }
-    ];
+    steps.forEach((s, i) => {
+      const number = prefix ? `${prefix}.${i + 1}` : `${i + 1}`;
+      result += `${number}. ${s.step}\n`;
 
-    return this.openAi.postCompletionChat(messages);
+      if (s.steps) {
+        result += this.createNumberedListString(s.steps, number);
+      }
+    });
+
+    return result;
   }
 }

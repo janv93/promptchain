@@ -1,9 +1,9 @@
 export interface Approach {
   approach: string;
-  steps?: ApproachStep[];
+  steps?: Step[];
 }
 
-export interface ApproachStep {
+export interface Step {
   step: string;
-  subSteps: Approach[];
+  steps?: Step[];
 }
