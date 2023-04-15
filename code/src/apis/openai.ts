@@ -6,8 +6,8 @@ export default class OpenAi {
   // gpt-3.5-turbo, gpt-4, gpt-4-32k
   // 0.002, 0.03-0.06, 0.06-0.12 $ per 1k tokens
   public model = 'gpt-3.5-turbo';
+  public count = 0;
   private baseUrl = 'https://api.openai.com/v1';
-  private count = 0;
 
   private headers = {
     'Authorization': `Bearer ${process.env.openai_secret}`
@@ -29,7 +29,6 @@ export default class OpenAi {
 
     try {
       this.count++;
-      console.log(`${url} count: ${this.count}`);
       const res = await axios.post(url, body, { headers: this.headers });
       const message = res.data.choices[0].message;
       return message.content;

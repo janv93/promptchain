@@ -26,10 +26,13 @@ Each step of this conversation tries to enhance the initial prompt and get close
     await this.generateSteps();
     const answer = this.lastMessage();
     this.resetChatMessages();
+    console.log(`${this.getCallCount()} calls were sent.`)
     return answer;
   }
 
   private async generateContextIdeas(): Promise<void> {
+    console.log('Generating context...');
+
     const message = `You are being asked the following prompt:\n
 "${this.initialPrompt}"\n
 Generate a list contextual information that is helpful to answer the prompt.
@@ -46,6 +49,7 @@ Now apply similar enhancing to the prompt. Only output the numerated list, nothi
   }
 
   private async generateApproaches(): Promise<void> {
+    console.log('Generating approaches...');
     this.resetChatMessages();
 
     const message = `You are being asked the following prompt:\n
@@ -78,6 +82,7 @@ Output a single string "yes" or "no" as an answer.`;
   }
 
   private async generateSteps() {
+    console.log('Generating steps...');
     const approachesWithSteps = await Promise.all(this.approaches.map(a => this.generateApproachSteps(a)));
   }
 
@@ -93,7 +98,7 @@ Generate a numerated list with steps for this approach. Only output the numerate
       await this.generateSubsteps(approach, approach.steps[i], [i]);
     }
 
-    console.log(this.createNumberedListString(approach.steps))
+    //console.log(this.createNumberedListString(approach.steps))
 
     return approach;
   }
@@ -127,12 +132,8 @@ Output a list of substeps like this:\n
 Only output the numerated list of substeps. Do not output any of the parent steps, only the list of substeps for this specific step. Output nothing before or after the list.`;
 
     const res = await this.chatSingle(message);
-    console.log(res);
-    if (res === 'done') {
-      return undefined;
-    } else {
-      return this.getSteps(res);
-    }
+    const steps = this.getSteps(res);
+    return steps;
   }
 
   private async needsSubsteps(approach: Approach, currentStep: Step, currentStepNumber: string): Promise<boolean> {

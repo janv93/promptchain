@@ -38,9 +38,37 @@ export default class Communication {
     ];
   }
 
-  protected getSteps(list: string): Array<string> {
-    const regex = /\d\.\s+|\n+/g;
-    return list.split(regex).filter(step => step.trim() !== '');
+  // extract array of steps from a string, only returns the most inner depth of the list
+  protected getSteps(list: string): string[] {
+    list = '\n' + list;
+    console.log(list)
+
+    const lines = list.split('\n').map(line => line.trim());
+
+    const linesWithNumeration = lines.filter(line => {
+      const match = line.match(/^\d+(\.\d+)*\./);
+      return match !== null;
+    });
+
+    const depths = [];
+
+    linesWithNumeration.forEach(l => {
+      const numeration = l.match(/^\d+(\.\d+)*\./)[0];
+      const depth = numeration.split('.').length;
+      if (!depths.includes(depth)) depths.push(depth);
+    });
+
+    const deepest = Math.max(...depths);
+
+    const childLines = linesWithNumeration.filter(l => {
+      const numeration = l.match(/^\d+(\.\d+)*\./)[0];
+      const depth = numeration.split('.').length;
+      return depth === deepest;
+    });
+
+    const childLinesText = childLines.map(l => l.replace(/^\d+(\.\d+)*\./, '').trim());
+    console.log(childLinesText)
+    return childLinesText;
   }
 
   protected createNumberedListString(steps: Step[], prefix = ''): string {
@@ -56,5 +84,9 @@ export default class Communication {
     });
 
     return result;
+  }
+
+  protected getCallCount(): number {
+    return this.openAi.count;
   }
 }
