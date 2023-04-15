@@ -126,7 +126,7 @@ Generate a numerated list with steps for this approach. Only output the numerate
     const message = `For the task "${approach.approach}" the following list of steps and substeps is given:\n
 ${this.createNumberedListString(approach.steps)}\n\n
 Only consider step "${currentStepNumber} ${currentStep.step}".\n
-Output a list of substeps like this:\n
+Output a list of substeps for this step like this:\n
 "1. substep 1\n
 2. substep 2"\n\n
 Only output the numerated list of substeps. Do not output any of the parent steps, only the list of substeps for this specific step. Output nothing before or after the list.`;
