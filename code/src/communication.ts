@@ -41,7 +41,6 @@ export default class Communication {
   // extract array of steps from a string, only returns the most inner depth of the list
   protected getSteps(list: string): string[] {
     list = '\n' + list;
-    console.log(list)
 
     const lines = list.split('\n').map(line => line.trim());
 
@@ -67,7 +66,6 @@ export default class Communication {
     });
 
     const childLinesText = childLines.map(l => l.replace(/^\d+(\.\d+)*\./, '').trim());
-    console.log(childLinesText)
     return childLinesText;
   }
 

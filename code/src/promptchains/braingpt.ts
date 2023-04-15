@@ -98,7 +98,7 @@ Generate a numerated list with steps for this approach. Only output the numerate
       await this.generateSubsteps(approach, approach.steps[i], [i]);
     }
 
-    //console.log(this.createNumberedListString(approach.steps))
+    console.log(this.createNumberedListString(approach.steps))
 
     return approach;
   }
