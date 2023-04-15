@@ -1,4 +1,5 @@
 import OpenAi from './apis/openai';
+import { encode } from 'gpt-3-encoder';
 import { Step } from './interfaces';
 
 export default class Communication {
@@ -7,6 +8,10 @@ export default class Communication {
   protected messages = [];
 
   constructor() { }
+
+  protected countTokens(str: string) {
+    return encode(str).length;
+  }
 
   protected lastMessage(): string {
     return this.messages.at(-1).content;
