@@ -9,8 +9,19 @@ export default class Communication {
 
   constructor() { }
 
+  protected setModel(model: number) {
+    switch(model) {
+      case 3.5: this.openAi.model = 'gpt-3.5-turbo';
+      case 4: this.openAi.model = 'gpt-4';
+    }
+  }
+
   protected countTokens(str: string) {
     return encode(str).length;
+  }
+
+  protected getCallCount(): number {
+    return this.openAi.count;
   }
 
   protected lastMessage(): string {
@@ -87,9 +98,5 @@ export default class Communication {
     });
 
     return result;
-  }
-
-  protected getCallCount(): number {
-    return this.openAi.count;
   }
 }
