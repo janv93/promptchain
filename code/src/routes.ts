@@ -2,9 +2,9 @@ import { Router, Request, Response } from 'express';
 import BrainGpt from './promptchains/braingpt';
 
 const router = Router();
-const brainGpt = new BrainGpt();
 
 router.post('/braingpt', async (req: Request, res: Response) => {
+  const brainGpt = new BrainGpt();
   const response = await brainGpt.chain(req.body.prompt);
   res.send(response);
 });
