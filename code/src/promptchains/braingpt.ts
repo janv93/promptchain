@@ -2,10 +2,13 @@ import Communication from '../communication';
 import { Approach, Step } from '../interfaces';
 
 export default class BrainGpt extends Communication {
+  private tokenLimit = 3000; // request token limit, reserve 1k for response
   private initialPrompt: string;
   private context: string;
   private approaches: Approach[];
   private bestApproach: Approach;
+  private bestApproachResults: string[];
+  private answer: string;
 
   constructor() {
     super();
@@ -17,22 +20,21 @@ The goal is to solve the prompt just using your knowledge, you are not given too
 Each step of this conversation tries to enhance the initial prompt and get closer to a complete answer.`;
   }
 
-  public async chain(prompt): Promise<string[]> {
+  public async chain(prompt): Promise<string> {
     this.resetChatMessages();
-    this.initialPrompt = prompt;
+    this.initialPrompt = prompt;/*
     await this.generateContextIdeas();
     await this.generateContext();
     await this.generateApproaches();
     await this.filterApproaches();
     await this.generateSteps();
-    await this.determineBestApproach();
-    // this.bestApproach = {"approach":"Analyze current trends in AI research and development to determine the rate of progress towards achieving general intelligence.","steps":[{"step":"Gather data on current AI research and development trends.","steps":[{"step":"Identify reputable sources of information on AI research and development."},{"step":"Collect data on the current state of AI technology, including recent breakthroughs and advancements."},{"step":"Research the most promising areas of AI research, such as deep learning, natural language processing, and computer vision."},{"step":"Analyze funding trends in AI research and development to determine which areas are receiving the most investment."},{"step":"Consider the ethical implications of AI research and development, including issues related to bias, privacy, and job displacement."}]},{"step":"Analyze the rate of progress towards achieving general intelligence based on this data.","steps":[{"step":"Identify current AI research and development trends related to achieving general intelligence."},{"step":"Evaluate recent breakthroughs and advancements in AI that contribute to progress towards achieving general intelligence."},{"step":"Assess the limitations and obstacles that are slowing down progress towards achieving general intelligence."},{"step":"Consider potential future breakthroughs or advancements that could accelerate progress towards achieving general intelligence."}]},{"step":"Consider any potential breakthroughs or advancements that could accelerate progress towards the singularity.","steps":[{"step":"Identify current AI research and development trends related to achieving general intelligence."},{"step":"Evaluate recent breakthroughs and advancements in AI that contribute to progress towards achieving general intelligence."},{"step":"Assess the limitations and obstacles that are slowing down progress towards achieving general intelligence."},{"step":"Consider potential future breakthroughs or advancements that could accelerate progress towards achieving general intelligence."}]},{"step":"Evaluate any potential obstacles or limitations that could slow down progress towards the singularity.","steps":[{"step":"Identify potential limitations or obstacles that could slow down progress towards achieving general intelligence."},{"step":"Evaluate the current state of technology and research in relation to these limitations or obstacles."},{"step":"Consider potential solutions or workarounds for these limitations or obstacles, such as new algorithms or hardware advancements."},{"step":"Assess the feasibility and timeline for implementing these solutions or workarounds."},{"step":"Determine the potential impact of these limitations or obstacles on the timeline for achieving the singularity."}]},{"step":"Use all available information to make an informed prediction about the likelihood of the technological singularity occurring before 2030, expressed as a percentage.","steps":[{"step":"Identify potential limitations or obstacles that could slow down progress towards achieving general intelligence."},{"step":"Evaluate the current state of technology and research in relation to these limitations or obstacles."},{"step":"Consider potential solutions or workarounds for these limitations or obstacles, such as new algorithms or hardware advancements."},{"step":"Assess the feasibility and timeline for implementing these solutions or workarounds."},{"step":"Determine the potential impact of these limitations or obstacles on the timeline for achieving the singularity."}]}]}
+    await this.determineBestApproach();*/
+    this.bestApproach = { "approach": "Analyze current trends in AI research and development to determine the rate of progress towards achieving general intelligence.", "steps": [{ "step": "Gather data on current AI research and development trends.", "steps": [{ "step": "Identify reputable sources of information on AI research and development." }, { "step": "Collect data on the current state of AI technology, including recent breakthroughs and advancements." }, { "step": "Research the most promising areas of AI research, such as deep learning, natural language processing, and computer vision." }, { "step": "Analyze funding trends in AI research and development to determine which areas are receiving the most investment." }, { "step": "Consider the ethical implications of AI research and development, including issues related to bias, privacy, and job displacement." }] }, { "step": "Analyze the rate of progress towards achieving general intelligence based on this data.", "steps": [{ "step": "Identify current AI research and development trends related to achieving general intelligence." }, { "step": "Evaluate recent breakthroughs and advancements in AI that contribute to progress towards achieving general intelligence." }, { "step": "Assess the limitations and obstacles that are slowing down progress towards achieving general intelligence." }, { "step": "Consider potential future breakthroughs or advancements that could accelerate progress towards achieving general intelligence." }] }, { "step": "Consider any potential breakthroughs or advancements that could accelerate progress towards the singularity.", "steps": [{ "step": "Identify current AI research and development trends related to achieving general intelligence." }, { "step": "Evaluate recent breakthroughs and advancements in AI that contribute to progress towards achieving general intelligence." }, { "step": "Assess the limitations and obstacles that are slowing down progress towards achieving general intelligence." }, { "step": "Consider potential future breakthroughs or advancements that could accelerate progress towards achieving general intelligence." }] }, { "step": "Evaluate any potential obstacles or limitations that could slow down progress towards the singularity.", "steps": [{ "step": "Identify potential limitations or obstacles that could slow down progress towards achieving general intelligence." }, { "step": "Evaluate the current state of technology and research in relation to these limitations or obstacles." }, { "step": "Consider potential solutions or workarounds for these limitations or obstacles, such as new algorithms or hardware advancements." }, { "step": "Assess the feasibility and timeline for implementing these solutions or workarounds." }, { "step": "Determine the potential impact of these limitations or obstacles on the timeline for achieving the singularity." }] }, { "step": "Use all available information to make an informed prediction about the likelihood of the technological singularity occurring before 2030, expressed as a percentage.", "steps": [{ "step": "Identify potential limitations or obstacles that could slow down progress towards achieving general intelligence." }, { "step": "Evaluate the current state of technology and research in relation to these limitations or obstacles." }, { "step": "Consider potential solutions or workarounds for these limitations or obstacles, such as new algorithms or hardware advancements." }, { "step": "Assess the feasibility and timeline for implementing these solutions or workarounds." }, { "step": "Determine the potential impact of these limitations or obstacles on the timeline for achieving the singularity." }] }] }
     await this.executeBestApproach();
-
-    const answer = this.messages;
+    await this.createAnswer();
     this.resetChatMessages();
     console.log(`${this.getCallCount()} calls were sent.`)
-    return answer;
+    return this.answer;
   }
 
   private async generateContextIdeas(): Promise<void> {
@@ -173,6 +175,7 @@ Only output the single word string, nothing before or after the word.`
   }
 
   private async executeBestApproach(): Promise<void> {
+    console.log('Executing best approach...');
     const stepsArray = this.flattenApproach(this.bestApproach);
     const resultsArray = [];
 
@@ -185,11 +188,13 @@ Only output the single word string, nothing before or after the word.`
         const result = await this.executeStep(step);
         resultsArray.push(result);
       } else {
-        const summary = await this.summarizeSteps(stepsAndResults, step, 3000);
+        const summary = await this.summarizeSteps(stepsAndResults, step);
         const result = await this.executeStep(step, summary);
         resultsArray.push(result);
       }
     }
+
+    this.bestApproachResults = stepsArray.map((s, i) => 'Step: ' + s + '\nAnswer: ' + resultsArray[i]);
   }
 
   // turn approach into 1D array of steps
@@ -208,7 +213,7 @@ Only output the single word string, nothing before or after the word.`
     return result;
   }
 
-  private async summarizeSteps(steps: string[], currentStep: string, limit: number): Promise<string> {
+  private async summarizeSteps(steps: string[], currentStep: string): Promise<string> {
     const extractPromptStart = `To solve the prompt "${this.initialPrompt}" this approach was generated: "${this.bestApproach.approach}".
 For this approach the following steps were generated:\n"`;
 
@@ -224,7 +229,7 @@ Be concise. The summary will be provided to solve the next step. If there are no
       const joined = currentSteps.join('\n');
       const tokenSum = this.countTokens(extractPromptStart + joined + extractPromptEnd);
 
-      if (tokenSum > limit) {
+      if (tokenSum > this.tokenLimit) {
         parts.push(lastJoined);
         lastPartIndex = i;
       }
@@ -232,8 +237,10 @@ Be concise. The summary will be provided to solve the next step. If there are no
 
     if (!parts.length) parts.push(steps.join('\n'));
 
-    const extracts = await this.extractInfoFromPreviousSteps(parts, extractPromptStart, extractPromptEnd)
-    return extracts.join('\n'); // TODO: for now join extracts, but in future summarize extracts so that sum is below token limit
+    const extracts = await this.extractInfoFromPreviousSteps(parts, extractPromptStart, extractPromptEnd);
+    const summarizeMessage = `Make the above text shorter but keep all the information.`;
+    const summary = extracts.length > 1 ? await this.summarizeTexts(extracts, summarizeMessage) : extracts.join('\n');
+    return summary;
   }
 
   private async extractInfoFromPreviousSteps(parts: string[], extractPromptStart: string, extractPromptEnd: string): Promise<string[]> {
@@ -241,6 +248,38 @@ Be concise. The summary will be provided to solve the next step. If there are no
       const message = extractPromptStart + p + extractPromptEnd;
       return this.chatSingle(message);
     }));
+  }
+
+  // recursively summarize array of texts until all texts fit in token limit, then join texts together into one string
+  private async summarizeTexts(texts: string[], message): Promise<string> {
+    // summarize texts
+    const shortInfos = await Promise.all(texts.map(async (i) => {
+      return this.countTokens(i) > this.tokenLimit / 2 ? this.chatSingle(`"${i}"\n${message}`) : i;
+    }));
+
+    // if single text left, return
+    if (shortInfos.length === 1) {
+      return shortInfos[0];
+    }
+
+    const hasOversizeInfos = shortInfos.some(i => this.countTokens(i) > this.tokenLimit / 2);
+
+    if (hasOversizeInfos) { // if texts > token limit still present
+      return this.summarizeTexts(shortInfos, message);
+    } else {
+      const joinedInfos: string[] = [];
+
+      // sum up pairs of texts to create greater chunks of texts, given that each text can reach max of token limit / 2
+      for (let i = 0; i < shortInfos.length; i += 2) {
+        if (i + 1 < shortInfos.length) {
+          joinedInfos.push(shortInfos[i] + '\n' + shortInfos[i + 1]);
+        } else {
+          joinedInfos.push(shortInfos[i]);
+        }
+      }
+
+      return this.summarizeTexts(joinedInfos, message);
+    }
   }
 
   private async executeStep(step: string, summary?: string): Promise<string> {
@@ -259,5 +298,21 @@ If you can't answer this step, output nothing.`;
     }
 
     return this.chatSingle(message);
+  }
+
+  private async createAnswer(): Promise<void> {
+    console.log('Finding answer...');
+    const summarizeMessage = `Use all the above information to answer the prompt "${this.initialPrompt}" as well as possible.
+Consider all information given, and summarize the conclusions in the information to provide an answer.`;
+
+    const answerMessage = `${summarizeMessage}
+If the prompt requires you to speculate, speculate with a disclaimer. You have to answer the prompt.`;
+
+    this.setModel(4);
+    this.tokenLimit = 7500;
+    const summary = await this.summarizeTexts(this.bestApproachResults, summarizeMessage);
+    this.answer = await this.chatSingle(`${summary}\n${answerMessage}`);
+    this.setModel(3.5);
+    this.tokenLimit = 3500;
   }
 }
