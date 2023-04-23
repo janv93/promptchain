@@ -306,7 +306,7 @@ If you can't answer this step, output nothing.`;
 Consider all information given, and summarize the conclusions in the information to provide an answer.`;
 
     const answerMessage = `${summarizeMessage}
-If the prompt requires you to speculate, speculate with a disclaimer. You have to answer the prompt.`;
+If the prompt requires you to speculate, speculate. You have to answer the prompt.`;
 
     this.setModel(4);
     this.tokenLimit = 7500;
