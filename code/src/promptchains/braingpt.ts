@@ -98,7 +98,7 @@ Output a single string "yes" or "no" as an answer.`;
   private async generateApproachSteps(approach: Approach): Promise<Approach> {
     const message = `To solve the prompt "${this.initialPrompt}" the following approach is given:
 "${approach.approach}"
-Generate a numerated list with steps for this approach. Consider that you have to be able to solve every step without collaboration or tools.
+Generate a numerated list with steps for this approach and keep the list short. Consider that you have to be able to solve every step without collaboration or tools.
 The steps are for YOU to solve without tools, just using your perfect knowledge.
 Only output the numerated list of steps, nothing before or after the list.`;
 
@@ -234,6 +234,12 @@ Be concise. The summary will be provided to solve the next step. If there are no
       if (tokenSum > this.tokenLimit) {
         parts.push(lastJoined);
         lastPartIndex = i;
+      } else {
+        lastJoined = joined;
+
+        if (i === steps.length - 1 && joined !== parts[parts.length - 1]) {
+          parts.push(joined);
+        }
       }
     });
 
@@ -310,8 +316,8 @@ Consider all information given, and summarize the conclusions in the information
     const answerMessage = `${summarizeMessage}
 If the prompt requires you to speculate, speculate. You have to answer the prompt.`;
 
-    //this.setModel(4);
-    //this.tokenLimit = 7500;
+    this.setModel(4);
+    this.tokenLimit = 7500;
     const summary = await this.summarizeTexts(this.bestApproachResults, summarizeMessage);
     this.answer = await this.chatSingle(`${summary}\n${answerMessage}`);
     this.setModel(3.5);

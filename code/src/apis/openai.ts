@@ -14,7 +14,7 @@ export default class OpenAi {
   };
 
   // https://platform.openai.com/docs/api-reference/chat
-  public async postCompletionChat(messages: any[]): Promise<string> {
+  public async postCompletionChat(messages: any[], retryCounter?: number): Promise<string> {
     const url = this.baseUrl + '/chat/completions';
 
     const body = {
@@ -33,8 +33,10 @@ export default class OpenAi {
       const message = res.data.choices[0].message;
       return message.content;
     } catch (err) {
+      if (retryCounter) retryCounter++; else retryCounter = 0;
+      retryCounter = retryCounter ? retryCounter++ : 0;
       this.handleError(err);
-      return '';
+      return (retryCounter < 2) ? this.postCompletionChat(messages, retryCounter) : '';
     }
   }
 
