@@ -14,10 +14,10 @@ export default class BrainGpt extends Communication {
     super();
 
     this.systemMessage = `You are an AI language model using the ${this.openAi.model} model from OpenAI API.
-Your knowledge cutoff is September 2021. You do not have access to information later than that. You do not have access to the internet and you cannot consult anyone.
-You are part of an algorithm which tries to solve any, even the most complex prompt using vector databases, chain of thought, reflection and correction and other techniques.
-The goal is to solve the prompt just using your knowledge, you are not given tools. Consider this at every task.
-Each step of this conversation tries to enhance the initial prompt and get closer to a complete answer.`;
+You do not have access to information later than that. You do not have access to the internet and you cannot consult or collaborate with anyone.
+You are part of an algorithm which tries to solve any prompt. The goal is to solve the prompt just using your knowledge, you are not given tools. Consider this at every task.
+You are trained on the entire internet and know how to code, you know everything. Your knowledge cutoff is September 2021. The experiment relies solely on your memory.
+It is important that you can solve any given prompt from just memory, you don't have to and can't research anything, you already know it.`;
   }
 
   public async chain(prompt): Promise<string> {
@@ -62,9 +62,10 @@ Now apply similar enhancing to the prompt. Only output the numerated list, nothi
     const message = `You are being asked the following prompt:
 "${this.initialPrompt}"
 You were given the following context information:
-${this.context}
-
-Now, I want you to generate a list of approaches on how to find a solution for the prompt. Only generate approaches that you yourself can do from just memory. Only output the numerated list, nothing before or after the list.`
+"${this.context}"
+I want you to generate a list of 3 approaches that are different from each other and are most likely to provide a complete answer to the prompt.
+You are using just your current capabilities as an all knowing AI.
+Only generate approaches that you yourself can do from just memory. Only output the numerated list, nothing before or after the list.`
 
     await this.chat(message);
     const last = this.lastMessage();
@@ -97,8 +98,9 @@ Output a single string "yes" or "no" as an answer.`;
   private async generateApproachSteps(approach: Approach): Promise<Approach> {
     const message = `To solve the prompt "${this.initialPrompt}" the following approach is given:
 "${approach.approach}"
-
-Generate a numerated list with steps for this approach. Only output the numerated list, nothing before or after the list.`;
+Generate a numerated list with steps for this approach. Consider that you have to be able to solve every step without collaboration or tools.
+The steps are for YOU to solve without tools, just using your perfect knowledge.
+Only output the numerated list of steps, nothing before or after the list.`;
 
     const res = await this.chatSingle(message);
     approach.steps = this.getSteps(res).map(s => ({ step: s }));
@@ -308,8 +310,8 @@ Consider all information given, and summarize the conclusions in the information
     const answerMessage = `${summarizeMessage}
 If the prompt requires you to speculate, speculate. You have to answer the prompt.`;
 
-    this.setModel(4);
-    this.tokenLimit = 7500;
+    //this.setModel(4);
+    //this.tokenLimit = 7500;
     const summary = await this.summarizeTexts(this.bestApproachResults, summarizeMessage);
     this.answer = await this.chatSingle(`${summary}\n${answerMessage}`);
     this.setModel(3.5);
