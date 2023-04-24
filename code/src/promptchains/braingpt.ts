@@ -311,7 +311,7 @@ If you can't answer this step, output nothing.`;
   private async createAnswer(): Promise<void> {
     console.log('Finding answer...');
     const summarizeMessage = `Use all the above information to answer the prompt "${this.initialPrompt}" as well as possible.
-Consider all information given, and summarize the conclusions in the information to provide an answer.`;
+Consider all information given, and summarize the conclusions in the information to provide an answer. If there is code present, include all the code contributing to the answer.`;
 
     const answerMessage = `${summarizeMessage}
 If the prompt requires you to speculate, speculate. You have to answer the prompt.`;
