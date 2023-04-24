@@ -140,7 +140,7 @@ Output a list of substeps for this step like this:
 "1. substep 1
 2. substep 2"
 
-Only output the numerated list of substeps. Do not output any of the parent steps, only the list of substeps for this specific step. Output nothing before or after the list.`;
+Only output the numerated list of substeps. Keep the list of substeps short. Do not output any of the parent steps, only the list of substeps for this specific step. Output nothing before or after the list.`;
 
     const res = await this.chatSingle(message);
     const steps = this.getSteps(res);
@@ -220,7 +220,7 @@ Only output the single word string, nothing before or after the word.`
 For this approach the following steps were generated:\n"`;
 
     const extractPromptEnd = `"\nExtract the key takeaways or a summary from these steps that are needed to execute the following next step:\n${currentStep}
-Be concise. The summary will be provided to solve the next step. If there are no takeaways from these steps, output nothing.`;
+Be concise. The summary will be provided to solve the next step. If there is code present, include the code needed. If there are no takeaways from these steps, output nothing.`;
 
     const parts = [];
     let lastJoined: string;
