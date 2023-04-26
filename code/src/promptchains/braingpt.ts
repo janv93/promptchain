@@ -316,7 +316,7 @@ Consider all information given, and summarize the conclusions in the information
 If the prompt requires you to speculate, speculate. You have to answer the prompt.`;
 
     this.setModel(4);
-    this.tokenLimit = 7500;
+    this.tokenLimit = 4000;
     const summary = await this.summarizeTexts(this.bestApproachResults, summarizeMessage);
     this.answer = await this.chatSingle(`${summary}\n${answerMessage}`);
     this.setModel(3.5);
