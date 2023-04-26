@@ -41,6 +41,8 @@ export default class OpenAi {
   }
 
   protected handleError(err: any) {
+    console.error('/chat/completions ERR:');
+
     if (err.response && err.response.data) {
       console.log(err.response.data);
     } else {
