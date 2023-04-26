@@ -36,7 +36,6 @@ export default class Communication {
   }
 
   protected async chatSingle(message: string): Promise<string> {
-    console.log(message);
     const messages = [
       { role: 'system', content: this.systemMessage },
       { role: 'user', content: message }
