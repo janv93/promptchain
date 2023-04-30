@@ -35,13 +35,14 @@ export default class OpenAi {
     } catch (err) {
       if (retryCounter) retryCounter++; else retryCounter = 0;
       retryCounter = retryCounter ? retryCounter++ : 0;
-      this.handleError(err);
+      this.handleError(err, retryCounter);
       return (retryCounter < 2) ? this.postCompletionChat(messages, retryCounter) : '';
     }
   }
 
-  protected handleError(err: any) {
-    console.error('/chat/completions ERR:');
+  protected handleError(err: any, retryCounter: number) {
+    console.error('/chat/completions ERR');
+    console.error(`Retry no ${retryCounter + 1}`);
 
     if (err.response && err.response.data) {
       console.log(err.response.data);
