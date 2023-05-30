@@ -3,7 +3,7 @@ import BrainGpt from './promptchains/braingpt';
 import Conversaition from './promptchains/conversaition';
 
 let id = 1;
-let clients: Map<number, Conversaition> = new Map();
+let conversaitions: Map<number, Conversaition> = new Map();
 
 const router = Router();
 
@@ -26,23 +26,24 @@ router.get('/conversaition', (req, res) => {
 
   const clientId = id++;
   const client = new Conversaition(req.query.prompt as string, res);
-  clients.set(clientId, client);
+  conversaitions.set(clientId, client);
 
   res.write(`data: ${JSON.stringify({ type: 'id', data: clientId })}\n\n`);
 
   req.on('close', () => {
-    clients.delete(clientId);
+    conversaitions.delete(clientId);
   });
 });
 
-router.post('/conversaition/:id', (req, res) => {
+router.get('/conversaition/:id', (req, res) => {
   const id: number = parseInt(req.params.id);
-  const client = clients.get(id);
+  const conversaition = conversaitions.get(id);
 
-  if (client) {
-    res.sendStatus(200);
+  if (conversaition) {
+    conversaition.triggerUserInput(req.query.answer as string);
+    res.json({ status: "OK" });  // Send a JSON response here
   } else {
-    res.sendStatus(404);
+    res.status(404).json({ error: "Conversation not found" }); // It's also good to send some information about the error
   }
 });
 

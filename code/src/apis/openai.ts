@@ -15,6 +15,7 @@ export default class OpenAi {
 
   // https://platform.openai.com/docs/api-reference/chat
   public async postCompletionChat(messages: any[], retryCounter?: number): Promise<string> {
+    console.log('POST completion');
     const url = this.baseUrl + '/chat/completions';
 
     const body = {
