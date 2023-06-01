@@ -30,7 +30,6 @@ export default class Conversaition extends Communication {
 
   public triggerUserAnswer(input: string) {
     this.userInput.next(input);
-    this.userInput.complete();
   }
 
   private startKeepAlive(): void {
