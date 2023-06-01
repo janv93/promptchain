@@ -27,11 +27,9 @@ export default class Conversaition extends Communication {
     console.log('Received prompt "' + prompt + '"');
   }
 
-  public triggerUserInput(input: string) {
+  public triggerUserAnswer(input: string) {
     this.userInput.next(input);
     this.userInput.complete();
-    this.stopKeepAlive();
-    this.startKeepAlive();
   }
 
   private startKeepAlive(): void {

@@ -40,7 +40,7 @@ router.get('/conversaition/:id', (req, res) => {
   const conversaition = conversaitions.get(id);
 
   if (conversaition) {
-    conversaition.triggerUserInput(req.query.answer as string);
+    conversaition.triggerUserAnswer(req.query.answer as string);
     res.json({ status: "OK" });  // Send a JSON response here
   } else {
     res.status(404).json({ error: "Conversation not found" }); // It's also good to send some information about the error
