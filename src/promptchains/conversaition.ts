@@ -11,6 +11,7 @@ export default class Conversaition extends Communication {
   private messagesChallenger = [];
   private sysMsgChallengee: string;
   private messagesChallengee = [];
+  private keepAliveIntervalId: NodeJS.Timeout;
 
   constructor(
     prompt: string,
@@ -27,9 +28,19 @@ export default class Conversaition extends Communication {
   }
 
   public triggerUserInput(input: string) {
-    console.log('input: ' + input)
     this.userInput.next(input);
     this.userInput.complete();
+    this.stopKeepAlive();
+    this.startKeepAlive();
+  }
+
+  private startKeepAlive(): void {
+    // Sends a comment to keep the connection alive every 30 seconds
+    this.keepAliveIntervalId = setInterval(() => this.writeToStream('keepAlive', ''), 30000);
+  }
+
+  private stopKeepAlive(): void {
+    clearInterval(this.keepAliveIntervalId);
   }
 
   private async startConversation(): Promise<void> {
@@ -44,6 +55,8 @@ export default class Conversaition extends Communication {
         await this.checkIfDone();
       }
     } while (!this.isDone)
+
+    this.stopKeepAlive();
   }
 
   private async generateSystemMessages(): Promise<void> {
