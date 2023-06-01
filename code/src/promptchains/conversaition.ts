@@ -14,9 +14,11 @@ export default class Conversaition extends Communication {
 
   constructor(
     prompt: string,
+    apiKey: string,
     response: Response
   ) {
     super();
+    this.openAi.apiKey = apiKey;
     this.response = response;
     this.prompt = prompt;
     this.setModel(4);
@@ -25,6 +27,7 @@ export default class Conversaition extends Communication {
   }
 
   public triggerUserInput(input: string) {
+    console.log('input: ' + input)
     this.userInput.next(input);
     this.userInput.complete();
   }
@@ -44,8 +47,10 @@ export default class Conversaition extends Communication {
   }
 
   private async generateSystemMessages(): Promise<void> {
-    await this.generateSystemMessageChallenger();
-    await this.generateSystemMessageChallengee();
+    await Promise.all([
+      this.generateSystemMessageChallenger(),
+      this.generateSystemMessageChallengee()
+    ]);
   }
 
   private async generateSystemMessageChallenger(): Promise<void> {
@@ -160,7 +165,7 @@ You are the evaluator who classifies if the Challenger accepted the Challengee's
 
     const message = `The last message of the Challenger was:
 "${this.messagesChallenger.at(-1).content}"
-Does the Challenger accept the answer completely? Answer "yes" or "no". Don't output anything but the string.`
+Does the Challenger accept the answer completely (100%)? Answer "yes" or "no". Don't output anything but the string.`
 
     const messages = [
       { role: 'system', content: sysMsg },

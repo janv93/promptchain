@@ -25,7 +25,7 @@ router.get('/conversaition', (req, res) => {
   res.flushHeaders();
 
   const clientId = id++;
-  const client = new Conversaition(req.query.prompt as string, res);
+  const client = new Conversaition(req.query.prompt as string, req.query.apiKey as string, res);
   conversaitions.set(clientId, client);
 
   res.write(`data: ${JSON.stringify({ type: 'id', data: clientId })}\n\n`);

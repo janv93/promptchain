@@ -7,11 +7,8 @@ export default class OpenAi {
   // 0.002, 0.03-0.06, 0.06-0.12 $ per 1k tokens
   public model = 'gpt-3.5-turbo';
   public count = 0;
+  public apiKey: string;
   private baseUrl = 'https://api.openai.com/v1';
-
-  private headers = {
-    'Authorization': `Bearer ${process.env.openai_secret}`
-  };
 
   // https://platform.openai.com/docs/api-reference/chat
   public async postCompletionChat(messages: any[], retryCounter?: number): Promise<string> {
@@ -30,7 +27,12 @@ export default class OpenAi {
 
     try {
       this.count++;
-      const res = await axios.post(url, body, { headers: this.headers });
+
+      const headers = {
+        'Authorization': `Bearer ${this.apiKey || process.env.openai_secret}`
+      };
+
+      const res = await axios.post(url, body, { headers: headers });
       const message = res.data.choices[0].message;
       return message.content;
     } catch (err) {
