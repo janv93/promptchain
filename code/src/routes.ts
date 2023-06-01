@@ -9,7 +9,7 @@ const router = Router();
 
 router.get('/', (req: Request, res: Response) => {
   res.statusCode = 200;
-  res.end('Running.');
+  res.json({message: 'Running.'});
 });
 
 router.post('/braingpt', async (req: Request, res: Response) => {
