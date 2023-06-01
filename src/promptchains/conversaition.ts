@@ -25,6 +25,7 @@ export default class Conversaition extends Communication {
     this.setModel(4);
     this.startConversation();
     console.log('Received prompt "' + prompt + '"');
+    this.startKeepAlive();
   }
 
   public triggerUserAnswer(input: string) {
