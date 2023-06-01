@@ -34,7 +34,6 @@ export default class Conversaition extends Communication {
   }
 
   private startKeepAlive(): void {
-    // Sends a comment to keep the connection alive every 30 seconds
     this.keepAliveIntervalId = setInterval(() => this.writeToStream('keepAlive', ''), 30000);
   }
 
