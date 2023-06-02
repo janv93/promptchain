@@ -1,0 +1,233 @@
+<mxfile host="Electron" modified="2023-04-04T11:14:51.046Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.1.2 Chrome/106.0.5249.199 Electron/21.4.3 Safari/537.36" etag="lP-1BKVUp8jQWYvjllvy" version="21.1.2" type="device">
+  <diagram name="Page-1" id="tEXub8zn_StnUfkf2jUU">
+    <mxGraphModel dx="2602" dy="2015" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="500" pageHeight="500" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-1" target="QFQLM7oPgDHJuGWCTTOq-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-1" value="Create abstraction of repository" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="-435" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-12" value="Create abstraction of every file" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="10" y="-345" width="140" height="120" as="geometry">
+            <mxRectangle x="20" y="110" width="200" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-13" value="Describe what file does" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="QFQLM7oPgDHJuGWCTTOq-12">
+          <mxGeometry y="30" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-14" value="Describe dependencies" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="QFQLM7oPgDHJuGWCTTOq-12">
+          <mxGeometry y="60" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-15" value="Describe context of file" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="QFQLM7oPgDHJuGWCTTOq-12">
+          <mxGeometry y="90" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-24" target="QFQLM7oPgDHJuGWCTTOq-26">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-24" value="Prompt: Implement feature" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="-435" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-33" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-26" target="QFQLM7oPgDHJuGWCTTOq-29">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-39" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-26" target="QFQLM7oPgDHJuGWCTTOq-38">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-26" value="Gather relevant files/code" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="-435" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-28" value="" style="endArrow=none;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-12" target="QFQLM7oPgDHJuGWCTTOq-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="360" y="-205" as="sourcePoint" />
+            <mxPoint x="410" y="-255" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-29" target="QFQLM7oPgDHJuGWCTTOq-31">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-29" value="File x, y, z are relevant" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="-345" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-35" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-31" target="QFQLM7oPgDHJuGWCTTOq-34">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-31" value="Create bottom-up dependency graph of each file" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="-255" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-37" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-34" target="QFQLM7oPgDHJuGWCTTOq-36">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-34" value="Recursively retrieve parent files which import x, y, z" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="-165" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-36" value="Gain complete context required for feature" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="-75" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-41" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-38">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="-345" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-46" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-38" target="QFQLM7oPgDHJuGWCTTOq-45">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-38" value="Generate steps to implement feature with given code" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="-435" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-42" value="Decide which files need to be created or modified" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="-345" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-48" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-45">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="750" y="-345" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-71" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-45" target="QFQLM7oPgDHJuGWCTTOq-70">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-45" value="Implement feature" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="690" y="-435" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-68" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.583;entryY=1;entryDx=0;entryDy=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryPerimeter=0;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-65" target="QFQLM7oPgDHJuGWCTTOq-65">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="840" y="-315" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="730" y="-285" />
+              <mxPoint x="730" y="-265" />
+              <mxPoint x="760" y="-265" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-69" value="feed generated code back&lt;br&gt;for each step" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="QFQLM7oPgDHJuGWCTTOq-68">
+          <mxGeometry x="-0.2941" relative="1" as="geometry">
+            <mxPoint x="18" y="20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-65" value="Create or modify files" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="690" y="-345" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-70" value="Create summary of changes" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="850" y="-435" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-73" value="&lt;h1&gt;Abstraction&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="-485" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-74" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-75" target="QFQLM7oPgDHJuGWCTTOq-81">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-75" value="Create abstraction of repository MyTradingAPI" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="65" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-76" value="Create abstraction of every file" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="10" y="155" width="140" height="180" as="geometry">
+            <mxRectangle x="20" y="110" width="200" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-77" value="File ema.ts creates an Exponential Moving Average" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="QFQLM7oPgDHJuGWCTTOq-76">
+          <mxGeometry y="30" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-78" value="ema.ts depends on technical-analysis.ts" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="QFQLM7oPgDHJuGWCTTOq-76">
+          <mxGeometry y="90" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-79" value="ema.ts is used by various trading algorithms" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="QFQLM7oPgDHJuGWCTTOq-76">
+          <mxGeometry y="130" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-80" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-81" target="QFQLM7oPgDHJuGWCTTOq-84">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-81" value="Prompt: Replace EMA with MA in all algorithms" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="65" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-82" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-84" target="QFQLM7oPgDHJuGWCTTOq-87">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-83" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-84" target="QFQLM7oPgDHJuGWCTTOq-95">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-84" value="algorithm1.ts&lt;br&gt;algorithm2.ts&lt;br&gt;algorithm3.ts" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="65" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-85" value="" style="endArrow=none;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-76" target="QFQLM7oPgDHJuGWCTTOq-75">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="360" y="295" as="sourcePoint" />
+            <mxPoint x="410" y="245" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-86" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-87" target="QFQLM7oPgDHJuGWCTTOq-89">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-87" value="algorithm1.ts , algorithm2.ts are relevant since they use EMA" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="155" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-88" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-89" target="QFQLM7oPgDHJuGWCTTOq-91">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-89" value="algorithm1.ts, algorithm2.ts are used in algorithms.ts, which is used in index.ts" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="245" width="120" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-90" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-91" target="QFQLM7oPgDHJuGWCTTOq-92">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-91" value="retrieve algorithms.ts, index.ts" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="350" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-92" value="Create text that includes all required files" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-93" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-95">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="155" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-94" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-95" target="QFQLM7oPgDHJuGWCTTOq-99">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-95" value="1. Create MA indicator&lt;br&gt;2. Replace EMA with MA in algorithms" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="65" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-96" value="1. Create ma.ts&lt;br&gt;2. Modify algorithm1.ts, algorithm2.ts" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="155" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-97" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-99" target="QFQLM7oPgDHJuGWCTTOq-102">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="750" y="155" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-98" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-99" target="QFQLM7oPgDHJuGWCTTOq-103">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-99" value="Implement MA feature" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="690" y="65" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-100" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.583;entryY=1;entryDx=0;entryDy=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryPerimeter=0;" edge="1" parent="1" source="QFQLM7oPgDHJuGWCTTOq-102" target="QFQLM7oPgDHJuGWCTTOq-102">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="845" y="185" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="725" y="215" />
+              <mxPoint x="735" y="215" />
+              <mxPoint x="735" y="250" />
+              <mxPoint x="765" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-101" value="feed generated code back&lt;br&gt;for each step" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="QFQLM7oPgDHJuGWCTTOq-100">
+          <mxGeometry x="-0.2941" relative="1" as="geometry">
+            <mxPoint x="20" y="37" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-102" value="Create ma.ts, replace code in algorithm1.ts, algorithm2.ts with new, generated code" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="695" y="155" width="120" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-103" value="ma.ts was created, algorithm1.calcEma() was changed to calcMa()..." style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="850" y="65" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QFQLM7oPgDHJuGWCTTOq-104" value="&lt;h1&gt;Example&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="15" width="140" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
