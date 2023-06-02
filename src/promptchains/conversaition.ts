@@ -120,7 +120,7 @@ Now with these two examples in mind, generate a system message for the Challenge
 
   private async sendCustomMessagesChallenger(): Promise<void> {
     let res = await this.openAi.postCompletionChat(this.messagesChallenger);
-    res = res.replace(/^Challenger: /, '').replace(/^"(.*)"$/, '$1');
+    res = res.replace(/^(Challenger: |Challengee: |Question: |Answer: )/, '').replace(/^"(.*)"$/, '$1');
     this.messagesChallenger.push({ role: 'assistant', content: res });
     const messageChallengee = `Challenger: "${res}"`;
     this.messagesChallengee.push({ role: 'user', content: messageChallengee });
@@ -129,7 +129,7 @@ Now with these two examples in mind, generate a system message for the Challenge
 
   private async sendCustomMessagesChallengee(): Promise<boolean> {
     let res = await this.openAi.postCompletionChat(this.messagesChallengee);
-    res = res.replace(/^Challengee: /, '').replace(/^"(.*)"$/, '$1');
+    res = res.replace(/^(Challenger: |Challengee: |Question: |Answer: )/, '').replace(/^"(.*)"$/, '$1');
     const hasUserQuestion = res.includes('<question>');
 
     if (hasUserQuestion) {
