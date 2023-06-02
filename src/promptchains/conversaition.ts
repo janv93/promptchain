@@ -177,7 +177,7 @@ You are the evaluator who classifies if the Challenger accepted the Challengee's
 
     const message = `The last message of the Challenger was:
 "${this.messagesChallenger.at(-1).content}"
-Does the Challenger accept the answer completely (100%)? Answer "yes" or "no". Don't output anything but the string.`
+Does the Challenger accept the answer completely (100%) and has no further questions? Answer "yes" if the challenger is satisfied or "no" if not. Don't output anything but the string.`
 
     const messages = [
       { role: 'system', content: sysMsg },
