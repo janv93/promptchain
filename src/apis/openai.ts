@@ -48,6 +48,8 @@ export default class OpenAi {
 
     if (err.response && err.response.data) {
       console.log(err.response.data);
+    } else if (err.cause) {
+      console.log(err.cause);
     } else {
       console.log(err);
     }
