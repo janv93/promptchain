@@ -185,6 +185,8 @@ Does the Challenger accept the answer completely (100%) and has no further quest
     ];
 
     const res = await this.openAi.postCompletionChat(messages);
+    console.log(messages);
+    console.log(res);
 
     this.isDone = res.toLowerCase().replace(/\.|\s/g, '') === 'yes';
     if (this.isDone) this.writeToStream('done', '');
