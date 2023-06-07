@@ -23,7 +23,7 @@ export default class Conversaition extends Communication {
     this.response = response;
     this.prompt = prompt;
     this.setModel(4);
-    this.startConversation();
+    this.chain();
     console.log('Received prompt "' + prompt + '"');
     this.startKeepAlive();
   }
@@ -40,7 +40,7 @@ export default class Conversaition extends Communication {
     clearInterval(this.keepAliveIntervalId);
   }
 
-  private async startConversation(): Promise<void> {
+  private async chain(): Promise<void> {
     await this.generateSystemMessages();
     this.initCustomMessages();
 
