@@ -15,5 +15,6 @@ export default class Autocoder extends Communication {
     fs.writeFileSync('tmp/repo.zip', buf);
     const execPromisified = util.promisify(exec);
     await execPromisified('unzip -o tmp/repo.zip -d tmp');
+    fs.unlinkSync('tmp/repo.zip');
   }
 }
