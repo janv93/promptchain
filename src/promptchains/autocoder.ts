@@ -10,6 +10,10 @@ export default class Autocoder extends Communication {
   }
 
   public async chain(prompt: string, zip: any): Promise<void> {
+    this.createRepo(zip);
+  }
+
+  private async createRepo(zip: any) {
     const buf = Buffer.from(zip.buffer);
     fs.mkdirSync('tmp');
     fs.writeFileSync('tmp/repo.zip', buf);
