@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import BrainGpt from './promptchains/braingpt';
 import Conversaition from './promptchains/conversaition';
+import Autocoder from './promptchains/autocoder';
 
 let id = 1;
 let conversaitions: Map<number, Conversaition> = new Map();
@@ -45,6 +46,12 @@ router.get('/conversaition/:id', (req, res) => {
   } else {
     res.status(404).json({ error: "Conversation not found" }); // It's also good to send some information about the error
   }
+});
+
+router.post('/autocoder', async (req: Request, res: Response) => {
+  const autocoder = new Autocoder();
+  const response = await autocoder.chain(req.body.prompt, (req as any).files[0]);
+  res.send(response);
 });
 
 export default router;
