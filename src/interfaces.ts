@@ -7,3 +7,8 @@ export interface Step {
   step: string;
   steps?: Step[];
 };
+
+export interface File {
+  path: string;
+  content: string;
+}
