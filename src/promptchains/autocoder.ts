@@ -5,7 +5,6 @@ import util from 'util';
 import Communication from '../communication';
 import { File } from '../interfaces';
 
-
 export default class Autocoder extends Communication {
   constructor() {
     super();
@@ -13,7 +12,10 @@ export default class Autocoder extends Communication {
 
   public async chain(prompt: string, zip: any): Promise<void> {
     await this.createRepo(zip);
-    const files = await this.loadFiles('tmp');
+    let files = await this.loadFiles('tmp');
+    files.forEach(f => f.dependencies = this.getDependencies(f.content));
+    files.forEach(f => delete f.content)
+    console.log(files)
     fs.rmSync('tmp', { recursive: true });
   }
 
@@ -46,5 +48,34 @@ export default class Autocoder extends Communication {
   private async isDirectory(path: string): Promise<boolean> {
     const stat = await fs.promises.stat(path);
     return stat.isDirectory();
+  }
+
+  private getDependencies(fileContent: string): string[] {
+    const regex = /(import\s+[\w*{}\s,]+\s+from\s+|require\()['"]([^"']+)["']\)?/g;
+    let match;
+    const result = [];
+
+    while ((match = regex.exec(fileContent)) !== null) {
+      const dependency = match[2];
+
+      if (dependency.startsWith('.') || dependency.startsWith('..')) {
+        // get the file name without the extension
+        const fileName = path.parse(dependency).name;
+        result.push(fileName);
+        continue;
+      }
+
+      try {
+        if (require.resolve(dependency) !== path.resolve(dependency)) {
+          continue;
+        }
+      } catch (e) {
+        // not a built-in module or node_modules module, add the file name to the list
+        const fileName = path.parse(dependency).name;
+        result.push(fileName);
+      }
+    }
+
+    return result;
   }
 }
