@@ -25,13 +25,13 @@ export default class OpenAi {
       presence_penalty: 2 // punishment for repeated tokens
     };
 
+    this.count++;
+
+    const headers = {
+      'Authorization': `Bearer ${this.apiKey || process.env.openai_secret}`
+    };
+
     try {
-      this.count++;
-
-      const headers = {
-        'Authorization': `Bearer ${this.apiKey || process.env.openai_secret}`
-      };
-
       const res = await axios.post(url, body, { headers: headers });
       const message = res.data.choices[0].message;
       return message.content;
