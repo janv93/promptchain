@@ -89,9 +89,7 @@ export default class Autocoder extends Communication {
 
   private async getDescription(content: string): Promise<string> {
     const message = `File content:\n\n${content}\n\nFile content end
-Provide a 2-3 sentences description of what the file with above content does. The description has to be complete and concise.
-Output only the description
-`;
+Provide a 2-3 sentences description of what the file with above content does. The description has to be complete and concise.`;
 
     const funcs = [{
       name: 'provide_description',
