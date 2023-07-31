@@ -11,5 +11,6 @@ export interface Step {
 export interface File {
   path: string;
   content: string;
+  description?: string;
   dependencies?: string[];
 }

@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import { encode } from 'gpt-3-encoder';
 
 export default class OpenAi {
   // CAREFUL - high cost - set usage limits
@@ -11,12 +11,14 @@ export default class OpenAi {
   private baseUrl = 'https://api.openai.com/v1';
 
   // https://platform.openai.com/docs/api-reference/chat
-  public async postCompletionChat(messages: any[], retryCounter?: number): Promise<string> {
+  public async postCompletionChat(messages: any[], retryCounter?: number, funcs?: any[], forceFunc?: string): Promise<any> {
     console.log('POST completion');
     const url = this.baseUrl + '/chat/completions';
+    const tokenCount = this.countTokens(JSON.stringify(messages) + funcs ? JSON.stringify(funcs) : '');
+    const needs16k = this.model === 'gpt-3.5-turbo' && tokenCount > 3500;
 
     const body = {
-      model: this.model,
+      model: needs16k ? 'gpt-3.5-turbo-16k' : this.model,
       messages, // single string or array of strings
       temperature: 0, // randomness, 0 = none, 2 = max
       top_p: 1, // alternative to temperature, filters output tokens by probability, 0.1 = only top 10% of tokens
@@ -25,16 +27,23 @@ export default class OpenAi {
       presence_penalty: 2 // punishment for repeated tokens
     };
 
-    this.count++;
+    if (funcs) {
+      body['functions'] = funcs;
+      if (forceFunc) {
+        body['function_call'] = { name: forceFunc };
+      }
+    }
 
     const headers = {
       'Authorization': `Bearer ${this.apiKey || process.env.openai_secret}`
     };
 
+    this.count++;
+
     try {
       const res = await axios.post(url, body, { headers: headers });
       const message = res.data.choices[0].message;
-      return message.content;
+      return message.content ?? message.function_call;
     } catch (err) {
       if (retryCounter !== undefined) retryCounter++; else retryCounter = 0;
       this.handleError(err, retryCounter);
@@ -53,5 +62,9 @@ export default class OpenAi {
     } else {
       console.log(err);
     }
+  }
+
+  private countTokens(str: string) {
+    return encode(str).length;
   }
 }

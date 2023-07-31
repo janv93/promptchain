@@ -35,13 +35,13 @@ export default class Communication {
     this.addChatMessage(res, false);
   }
 
-  protected async chatSingle(message: string): Promise<string> {
+  protected async chatSingle(message: string, funcs?: any[], forceFunc?: string): Promise<any> {
     const messages = [
       { role: 'system', content: this.systemMessage },
       { role: 'user', content: message }
     ];
 
-    return this.openAi.postCompletionChat(messages);
+    return this.openAi.postCompletionChat(messages, null, funcs, forceFunc);
   }
 
   protected addChatMessage(content: string, isUser: boolean): void {
