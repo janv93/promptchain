@@ -6,18 +6,24 @@ import Communication from '../communication';
 import { File } from '../interfaces';
 
 export default class Autocoder extends Communication {
+  private initialPrompt: string;
+
   constructor() {
     super();
     this.systemMessage = `You are an AI language model and coding expert.`;
   }
 
   public async chain(prompt: string, zip: any): Promise<void> {
+    this.initialPrompt = prompt;
     await this.createRepo(zip);
     let files = await this.loadFiles('tmp');
     this.getFileDependencies(files);
     files = await this.getDescriptions(files);
     const json = this.createRepoJson(files);
-    console.log(json);
+    this.setModel(4);
+    files = await this.markRelevantFiles(files, json);
+    this.setModel(3.5);
+    const relevant = files.filter(f => f.relevant);
     fs.rmSync('tmp', { recursive: true });
   }
 
@@ -40,7 +46,7 @@ export default class Autocoder extends Communication {
         return this.loadFiles(fullPath);
       } else {
         const content = await fs.promises.readFile(fullPath, 'utf-8');
-        return [{ path: fullPath, content }];
+        return [{ path: fullPath, name: path.basename(fullPath), content }];
       }
     }));
 
@@ -133,9 +139,11 @@ Provide a 2-3 sentences description of what the file with above content does. Th
       paths.forEach((path, index) => {
         if (!(path in currentNode)) {
           if (index === paths.length - 1) {
-            delete file.path;
-            delete file.content;
-            currentNode[path] = file;
+            const copy = { ...file };
+            delete copy.path;
+            delete copy.name;
+            delete copy.content;
+            currentNode[path] = copy;
           } else {
             currentNode[path] = {};
           }
@@ -148,5 +156,38 @@ Provide a 2-3 sentences description of what the file with above content does. Th
     }
 
     return JSON.stringify(rootNode);
+  }
+
+  private async markRelevantFiles(files: File[], structure: string): Promise<File[]> {
+    return Promise.all(files.map(async f => {
+      f.relevant = await this.isRelevant(f, structure);
+      console.log(f.name, f.relevant)
+      return f;
+    }));
+  }
+
+  private async isRelevant(file: File, structure: string): Promise<boolean> {
+    const message = `The structure of a repository is given as following:\n${structure}\n
+We consider one file at a time. Consider the content of the current file  ${file.name}:\nSTART OF FILE\n${file.content}\nEND OF FILE
+Is it necessary to do code changes in this file in order to fulfill the user prompt "${this.initialPrompt}"?`;
+
+    const funcs = [{
+      name: 'needs_change',
+      description: 'Flag the current file if it needs to be modified or not',
+      parameters: {
+        type: 'object',
+        properties: {
+          change: {
+            type: 'boolean',
+            description: 'If the current file needs to be changed in order to fulfill the user request'
+          }
+        },
+        required: ['change']
+      }
+    }];
+
+    const forceFunc = 'needs_change';
+    const res = await this.chatSingle(message, funcs, forceFunc);
+    return JSON.parse(res.arguments).change;
   }
 }

@@ -10,7 +10,9 @@ export interface Step {
 
 export interface File {
   path: string;
+  name: string;
   content: string;
   description?: string;
   dependencies?: string[];
+  relevant?: boolean;
 }
