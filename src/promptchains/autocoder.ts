@@ -14,9 +14,10 @@ export default class Autocoder extends Communication {
   public async chain(prompt: string, zip: any): Promise<void> {
     await this.createRepo(zip);
     let files = await this.loadFiles('tmp');
-    files.forEach(f => f.dependencies = this.getDependencies(f.content));
+    this.getFileDependencies(files);
     files = await this.getDescriptions(files);
-    files.forEach(f => console.log(f.path, f.description))
+    const json = this.createRepoJson(files);
+    console.log(json);
     fs.rmSync('tmp', { recursive: true });
   }
 
@@ -49,6 +50,16 @@ export default class Autocoder extends Communication {
   private async isDirectory(path: string): Promise<boolean> {
     const stat = await fs.promises.stat(path);
     return stat.isDirectory();
+  }
+
+  private getFileDependencies(files: File[]): void {
+    files.forEach(f => {
+      const dependencies = this.getDependencies(f.content);
+
+      if (dependencies.length) {
+        f.dependencies = dependencies;
+      }
+    });
   }
 
   private getDependencies(content: string): string[] {
@@ -110,5 +121,32 @@ Provide a 2-3 sentences description of what the file with above content does. Th
 
     const res = await this.chatSingle(message, funcs, forceFunc);
     return JSON.parse(res.arguments).description;
+  }
+
+  private createRepoJson(files: File[]): string {
+    const rootNode = {};
+
+    for (const file of files) {
+      let currentNode = rootNode;
+      // Remove the root directory ("tmp") from the paths
+      const paths = file.path.split('\\').slice(1);
+      paths.forEach((path, index) => {
+        if (!(path in currentNode)) {
+          if (index === paths.length - 1) {
+            delete file.path;
+            delete file.content;
+            currentNode[path] = file;
+          } else {
+            currentNode[path] = {};
+          }
+        }
+
+        if (index !== paths.length - 1) {
+          currentNode = currentNode[path];
+        }
+      });
+    }
+
+    return JSON.stringify(rootNode);
   }
 }
