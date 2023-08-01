@@ -13,7 +13,11 @@ export default class Autocoder extends Communication {
     this.systemMessage = `You are an AI language model and coding expert.`;
   }
 
-  public async chain(prompt: string, zip: any): Promise<void> {
+  public async chain(prompt: string, zip: any): Promise<string> {
+    if (fs.existsSync('tmp')) {
+      fs.rmSync('tmp', { recursive: true });
+    }
+
     this.initialPrompt = prompt;
     await this.createRepo(zip);
     let files = await this.loadFiles('tmp');
@@ -25,8 +29,7 @@ export default class Autocoder extends Communication {
     this.setModel(3.5);
     const relevant = files.filter(f => f.relevant);
     const modifications = await this.getModifications(relevant, structure);
-    console.log(modifications)
-    fs.rmSync('tmp', { recursive: true });
+    return modifications;
   }
 
   private async createRepo(zip: any): Promise<void> {
@@ -198,11 +201,11 @@ The structure of a repository is given as following:\n${structure}\n
 The contents of the relevant files are as follows:
 ${this.createFileContentSummaries(files)}
 Output all the changes required in order to fulfill the request "${this.initialPrompt}". Only output the code changes in the format: [name of file]\n[changes]`;
-
+    console.log(message)
     return this.chatSingle(message);
   }
 
   private createFileContentSummaries(files: File[]): string {
-    return files.reduce((summary, f) => summary + `${f.name}:\nSTART OF FILE\n${f.content}\nEND OF FILE\n\n`, '');
+    return files.reduce((summary, f) => summary + `${f.name}:\n---START OF FILE---\n${f.content}\n---END OF FILE---\n\n`, '');
   }
 }
