@@ -1,7 +1,6 @@
 import OpenAi from './apis/openai';
 import { encode } from 'gpt-3-encoder';
 import { Step } from './interfaces';
-import * as ls from 'local-storage';
 
 export default class Communication {
   protected openAi = new OpenAi();
