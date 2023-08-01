@@ -12,7 +12,7 @@ https://github.com/janv93/promptchain/assets/22982131/a88e7b88-0d37-409b-9869-b9
 A feedback loop that implements chain of thought, summarization and eventually reflection. Currently extremely expensive (sometimes more than 10$ per run), but expense is necessary for best results. Waiting for API cost to decrease and speed to increase. Eventually will use streams instead of single call.
 
 ### Autocoder
-Idea is to autonomously get a feature or bugfix implemented. Already possible at very high cost (more calls to reduce probabilistic errors). Main difficulty will be writing generated code back to its corresponding file. Also files in repository should not be longer than 7500 tokens (GPT-4 token limit) because code should never be summarized. Except for that there should be no bigger challenges. Waiting for API cost to decrease.
+Idea is to autonomously get a feature or bugfix implemented. WIP. Currently using 16k GPT-3.5 model which is not good enough for most features, the longer the context the more confused it gets. Waiting for GPT-4 32k later this year.
 
 ## Other ideas
 
