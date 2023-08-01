@@ -14,11 +14,11 @@ export default class OpenAi {
   public async postCompletionChat(messages: any[], retryCounter?: number, funcs?: any[], forceFunc?: string): Promise<any> {
     console.log('POST completion');
     const url = this.baseUrl + '/chat/completions';
-    const tokenCount = this.countTokens(JSON.stringify(messages) + funcs ? JSON.stringify(funcs) : '');
-    const needs16k = this.model === 'gpt-3.5-turbo' && tokenCount > 3500;
+    const tokenCount = this.countTokens(JSON.stringify(messages) + (funcs ? JSON.stringify(funcs) : ''));
+    const model = this.model === 'gpt-4' || tokenCount <= 3500 ? this.model : 'gpt-3.5-turbo-16k';
 
     const body = {
-      model: needs16k ? 'gpt-3.5-turbo-16k' : this.model,
+      model,
       messages, // single string or array of strings
       temperature: 0, // randomness, 0 = none, 2 = max
       top_p: 1, // alternative to temperature, filters output tokens by probability, 0.1 = only top 10% of tokens

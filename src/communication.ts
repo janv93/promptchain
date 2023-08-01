@@ -1,18 +1,20 @@
 import OpenAi from './apis/openai';
 import { encode } from 'gpt-3-encoder';
 import { Step } from './interfaces';
+import * as ls from 'local-storage';
 
 export default class Communication {
   protected openAi = new OpenAi();
   protected systemMessage: string;
   protected messages = [];
+  protected localStorage = ls;
 
   constructor() { }
 
   protected setModel(model: number) {
     switch(model) {
-      case 3.5: this.openAi.model = 'gpt-3.5-turbo';
-      case 4: this.openAi.model = 'gpt-4';
+      case 3.5: this.openAi.model = 'gpt-3.5-turbo'; break;
+      case 4: this.openAi.model = 'gpt-4'; break;
     }
   }
 

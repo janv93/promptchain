@@ -19,11 +19,13 @@ export default class Autocoder extends Communication {
     let files = await this.loadFiles('tmp');
     this.getFileDependencies(files);
     files = await this.getDescriptions(files);
-    const json = this.createRepoJson(files);
+    const structure = this.createRepoStructure(files);
     this.setModel(4);
-    files = await this.markRelevantFiles(files, json);
+    files = await this.markRelevantFiles(files, structure);
     this.setModel(3.5);
     const relevant = files.filter(f => f.relevant);
+    const modifications = await this.getModifications(relevant, structure);
+    console.log(modifications)
     fs.rmSync('tmp', { recursive: true });
   }
 
@@ -105,7 +107,7 @@ export default class Autocoder extends Communication {
   }
 
   private async getDescription(content: string): Promise<string> {
-    const message = `File content:\n\n${content}\n\nFile content end
+    const message = `START OF FILE\n${content}\nEND OF FILE\n\n
 Provide a 2-3 sentences description of what the file with above content does. The description has to be complete and concise.`;
 
     const funcs = [{
@@ -129,7 +131,7 @@ Provide a 2-3 sentences description of what the file with above content does. Th
     return JSON.parse(res.arguments).description;
   }
 
-  private createRepoJson(files: File[]): string {
+  private createRepoStructure(files: File[]): string {
     const rootNode = {};
 
     for (const file of files) {
@@ -161,7 +163,6 @@ Provide a 2-3 sentences description of what the file with above content does. Th
   private async markRelevantFiles(files: File[], structure: string): Promise<File[]> {
     return Promise.all(files.map(async f => {
       f.relevant = await this.isRelevant(f, structure);
-      console.log(f.name, f.relevant)
       return f;
     }));
   }
@@ -189,5 +190,19 @@ Is it necessary to do code changes in this file in order to fulfill the user pro
     const forceFunc = 'needs_change';
     const res = await this.chatSingle(message, funcs, forceFunc);
     return JSON.parse(res.arguments).change;
+  }
+
+  private async getModifications(files: File[], structure: string): Promise<string> {
+    const message = `The following user request is given: "${this.initialPrompt}"
+The structure of a repository is given as following:\n${structure}\n
+The contents of the relevant files are as follows:
+${this.createFileContentSummaries(files)}
+Output all the changes required in order to fulfill the request "${this.initialPrompt}". Only output the code changes.`;
+
+    return this.chatSingle(message);
+  }
+
+  private createFileContentSummaries(files: File[]): string {
+    return files.reduce((summary, f) => summary + `${f.name}:\nSTART OF FILE\n${f.content}\nEND OF FILE\n\n`, '');
   }
 }
