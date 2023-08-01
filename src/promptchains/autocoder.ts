@@ -197,7 +197,7 @@ Is it necessary to do code changes in this file in order to fulfill the user pro
 The structure of a repository is given as following:\n${structure}\n
 The contents of the relevant files are as follows:
 ${this.createFileContentSummaries(files)}
-Output all the changes required in order to fulfill the request "${this.initialPrompt}". Only output the code changes.`;
+Output all the changes required in order to fulfill the request "${this.initialPrompt}". Only output the code changes in the format: [name of file]\n[changes]`;
 
     return this.chatSingle(message);
   }
