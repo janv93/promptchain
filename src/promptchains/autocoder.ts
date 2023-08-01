@@ -169,7 +169,7 @@ Provide a 2-3 sentences description of what the file with above content does. Th
   private async isRelevant(file: File, structure: string): Promise<boolean> {
     const message = `The structure of a repository is given as following:\n${structure}\n
 We consider one file at a time. Consider the content of the current file  ${file.name}:\nSTART OF FILE\n${file.content}\nEND OF FILE
-Is it necessary to do code changes in this file in order to fulfill the user prompt "${this.initialPrompt}"?`;
+Is it necessary to do code changes in this file in order to fulfill the user prompt "${this.initialPrompt}"? If it is sufficient to do the change in other files, don't flag it.`;
 
     const funcs = [{
       name: 'needs_change',
@@ -179,7 +179,7 @@ Is it necessary to do code changes in this file in order to fulfill the user pro
         properties: {
           change: {
             type: 'boolean',
-            description: 'If the current file needs to be changed in order to fulfill the user request'
+            description: `If the current file ${file.name} needs to be changed in order to fulfill the user request`
           }
         },
         required: ['change']
