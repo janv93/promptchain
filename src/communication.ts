@@ -6,7 +6,6 @@ export default class Communication {
   protected openAi = new OpenAi();
   protected systemMessage: string;
   protected messages = [];
-  protected localStorage = ls;
 
   constructor() { }
 
