@@ -1,4 +1,5 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { exec } from 'child_process';
 import util from 'util';
@@ -8,19 +9,20 @@ import { File } from '../interfaces';
 export default class Autocoder extends Communication {
   private initialPrompt: string;
   private files: File[];
+  private zipName: string;
 
   constructor() {
     super();
     this.systemMessage = `You are an AI language model and coding expert.`;
   }
 
-  public async chain(prompt: string, zip: any): Promise<string> {
+  public async chain(prompt: string, zip: any): Promise<Buffer> {
     if (fs.existsSync('tmp')) {
       fs.rmSync('tmp', { recursive: true });
     }
 
     this.initialPrompt = prompt;
-    await this.createRepo(zip);
+    await this.unzipRepo(zip);
     this.files = await this.loadFiles('tmp');
     this.filterFiles();
     this.getFileDependencies();
@@ -28,7 +30,7 @@ export default class Autocoder extends Communication {
     const structure = this.createRepoStructure();
     const isLargeRepo = this.isLargeRepo();
     this.setModel(4);
-    console.log(6)
+
     if (isLargeRepo) {
       await this.markRelevantFilesQuick(structure);
       this.files = this.files.filter(f => f.relevant);
@@ -36,23 +38,20 @@ export default class Autocoder extends Communication {
     } else {
       await this.markRelevantFilesFull(structure);
     }
-    console.log(7)
+
     this.setModel(3.5);
     this.files = this.files.filter(f => f.relevant);
-    const modifications = await this.getModifications(structure);
-    console.log(8);
+    const modifications = await this.getModifications(structure); // use gpt-4-32k when released
     console.log(modifications)
     await this.getModifiedFilesList(modifications, structure);
-    console.log(9)
     await this.getSeparateModifications(modifications);
-    console.log(10)
     await this.getModifiedFileContents();
-    console.log(11)
     this.writeModifiedContents();
-    return modifications;
+    return this.zipRepo();
   }
 
-  private async createRepo(zip: any): Promise<void> {
+  private async unzipRepo(zip: any): Promise<void> {
+    this.zipName = zip.originalname;
     const buf = Buffer.from(zip.buffer);
     fs.mkdirSync('tmp');
     fs.writeFileSync('tmp/repo.zip', buf);
@@ -300,10 +299,10 @@ Call set_modified_files() with an array of all modified files. Each file needs t
     const forceFunc = 'set_modified_files';
     const res = await this.chatSingle(message, funcs, forceFunc);
     const modifiedFiles = JSON.parse(res.arguments).files;
-    console.log(modifiedFiles)
-console.log(this.files.length, 'asd')
+    const basenames = modifiedFiles.map(f => path.basename(f));
+
     this.files.forEach(f => {
-      if (modifiedFiles.includes(f.name)) {
+      if (basenames.includes(f.name)) {
         f.modified = true;
       }
     });
@@ -387,5 +386,23 @@ Integrate these changes in the file above and write the new content of the entir
         console.error(`Error writing to file: ${err}`);
       }
     });
+  }
+
+  private async zipRepo(): Promise<Buffer> {
+    const execPromisified = util.promisify(exec);
+
+    try {
+      if (os.platform() === 'win32') {
+        // For Windows
+        await execPromisified(`powershell "cd tmp; Compress-Archive -Path * -DestinationPath ../tmp/${this.zipName}; cd .."`);
+      } else {
+        // For Linux
+        await execPromisified(`cd tmp && zip -r ../tmp/${this.zipName} . && cd ..`);
+      }
+
+      return fs.readFileSync(`tmp/${this.zipName}`);
+    } catch (err) {
+      console.error(`An error occurred: ${err}`);
+    }
   }
 }

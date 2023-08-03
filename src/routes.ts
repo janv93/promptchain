@@ -10,7 +10,7 @@ const router = Router();
 
 router.get('/', (req: Request, res: Response) => {
   res.statusCode = 200;
-  res.json({message: 'Running.'});
+  res.json({ message: 'Running.' });
 });
 
 router.post('/braingpt', async (req: Request, res: Response) => {
@@ -51,6 +51,8 @@ router.get('/conversaition/:id', (req, res) => {
 router.post('/autocoder', async (req: Request, res: Response) => {
   const autocoder = new Autocoder();
   const response = await autocoder.chain(req.body.prompt, (req as any).files[0]);
+  res.setHeader('Content-Type', 'application/zip');
+  res.setHeader('Content-Disposition', `attachment; filename=${(req as any).files[0].originalname}`);
   res.send(response);
 });
 
