@@ -15,4 +15,7 @@ export interface File {
   description?: string;
   dependencies?: string[];
   relevant?: boolean;
+  modified?: boolean;
+  modification?: string;
+  modifiedContent?: string;
 }

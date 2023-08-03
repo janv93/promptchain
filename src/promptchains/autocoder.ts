@@ -7,6 +7,7 @@ import { File } from '../interfaces';
 
 export default class Autocoder extends Communication {
   private initialPrompt: string;
+  private files: File[];
 
   constructor() {
     super();
@@ -20,15 +21,34 @@ export default class Autocoder extends Communication {
 
     this.initialPrompt = prompt;
     await this.createRepo(zip);
-    let files = await this.loadFiles('tmp');
-    this.getFileDependencies(files);
-    files = await this.getDescriptions(files);
-    const structure = this.createRepoStructure(files);
+    this.files = await this.loadFiles('tmp');
+    this.filterFiles();
+    this.getFileDependencies();
+    await this.getDescriptions();
+    const structure = this.createRepoStructure();
+    const isLargeRepo = this.isLargeRepo();
     this.setModel(4);
-    files = await this.markRelevantFiles(files, structure);
+    console.log(6)
+    if (isLargeRepo) {
+      await this.markRelevantFilesQuick(structure);
+      this.files = this.files.filter(f => f.relevant);
+      await this.markRelevantFilesFull(structure);
+    } else {
+      await this.markRelevantFilesFull(structure);
+    }
+    console.log(7)
     this.setModel(3.5);
-    const relevant = files.filter(f => f.relevant);
-    const modifications = await this.getModifications(relevant, structure);
+    this.files = this.files.filter(f => f.relevant);
+    const modifications = await this.getModifications(structure);
+    console.log(8);
+    console.log(modifications)
+    await this.getModifiedFilesList(modifications, structure);
+    console.log(9)
+    await this.getSeparateModifications(modifications);
+    console.log(10)
+    await this.getModifiedFileContents();
+    console.log(11)
+    this.writeModifiedContents();
     return modifications;
   }
 
@@ -58,13 +78,24 @@ export default class Autocoder extends Communication {
     return files.flat();
   }
 
+  private filterFiles() {
+    this.files = this.files.filter((f: File) => {
+      return f.name !== 'package-lock.json';
+    });
+  }
+
+  private isLargeRepo(): boolean {
+    const totalTokens = this.files.reduce((a, c) => a + this.countTokens(c.content), 0);
+    return totalTokens > 20000;
+  }
+
   private async isDirectory(path: string): Promise<boolean> {
     const stat = await fs.promises.stat(path);
     return stat.isDirectory();
   }
 
-  private getFileDependencies(files: File[]): void {
-    files.forEach(f => {
+  private getFileDependencies(): void {
+    this.files.forEach(f => {
       const dependencies = this.getDependencies(f.content);
 
       if (dependencies.length) {
@@ -102,8 +133,8 @@ export default class Autocoder extends Communication {
     return result;
   }
 
-  private async getDescriptions(files: File[]): Promise<File[]> {
-    return Promise.all(files.map(async f => {
+  private async getDescriptions(): Promise<any> {
+    this.files = await Promise.all(this.files.map(async f => {
       f.description = await this.getDescription(f.content);
       return f;
     }));
@@ -134,10 +165,10 @@ Provide a 2-3 sentences description of what the file with above content does. Th
     return JSON.parse(res.arguments).description;
   }
 
-  private createRepoStructure(files: File[]): string {
+  private createRepoStructure(): string {
     const rootNode = {};
 
-    for (const file of files) {
+    for (const file of this.files) {
       let currentNode = rootNode;
       // Remove the root directory ("tmp") from the paths
       const paths = file.path.split('\\').slice(1);
@@ -163,8 +194,42 @@ Provide a 2-3 sentences description of what the file with above content does. Th
     return JSON.stringify(rootNode);
   }
 
-  private async markRelevantFiles(files: File[], structure: string): Promise<File[]> {
-    return Promise.all(files.map(async f => {
+  private async markRelevantFilesQuick(structure: string): Promise<any> {
+    const message = `The structure of a repository is given as following:\n${structure}\n
+In order to fulfill the prompt "${this.initialPrompt}", you must select a list of files which are potentially relevant for this prompt.
+Meaning they potentially need to be changed in order to fulfill the prompt. Each item in the array must have the notation [file name].[file extension]`;
+
+    const funcs = [{
+      name: 'set_relevant_files',
+      description: 'Set the files that are relevant in order to fulfill the user prompt',
+      parameters: {
+        type: 'object',
+        properties: {
+          files: {
+            type: 'array',
+            description: 'The files which are relevant',
+            items: {
+              type: 'string'
+            }
+          }
+        },
+        required: ['files']
+      }
+    }];
+
+    const forceFunc = 'set_relevant_files';
+    const res = await this.chatSingle(message, funcs, forceFunc);
+    const relevant: string[] = JSON.parse(res.arguments).files;
+
+    this.files.forEach(f => {
+      if (relevant.includes(f.name)) {
+        f.relevant = true;
+      }
+    });
+  }
+
+  private async markRelevantFilesFull(structure: string): Promise<any> {
+    this.files = await Promise.all(this.files.map(async f => {
       f.relevant = await this.isRelevant(f, structure);
       return f;
     }));
@@ -195,17 +260,132 @@ Is it necessary to do code changes in this file in order to fulfill the user pro
     return JSON.parse(res.arguments).change;
   }
 
-  private async getModifications(files: File[], structure: string): Promise<string> {
+  private async getModifications(structure: string): Promise<string> {
     const message = `The following user request is given: "${this.initialPrompt}"
 The structure of a repository is given as following:\n${structure}\n
 The contents of the relevant files are as follows:
-${this.createFileContentSummaries(files)}
-Output all the changes required in order to fulfill the request "${this.initialPrompt}". Only output the code changes in the format: [name of file]\n[changes]`;
-    console.log(message)
+${this.createFileContentSummaries(this.files)}
+Output all the changes required in order to fulfill the request "${this.initialPrompt}". Don't output pseudocode, output all code that is changed, no missing parts. Only output the code changes in the format: [name of file]\n[changes]`;
+
     return this.chatSingle(message);
   }
 
   private createFileContentSummaries(files: File[]): string {
-    return files.reduce((summary, f) => summary + `${f.name}:\n---START OF FILE---\n${f.content}\n---END OF FILE---\n\n`, '');
+    return files.reduce((summary, f) => summary + `\n---${f.name} start---\n${f.content}\n---${f.name} end---\n\n`, '');
+  }
+
+  private async getModifiedFilesList(modifications: string, structure: string): Promise<any> {
+    const message = `The structure of a repository is given as following:\n${structure}\n
+In order to fulfill the prompt "${this.initialPrompt}" the following changes were proposed:\n---changes start---\n${modifications}\n---changes end---
+Call set_modified_files() with an array of all modified files. Each file needs to have the notation [file name].[file extension]`;
+
+    const funcs = [{
+      name: 'set_modified_files',
+      description: 'Set the files that were modified',
+      parameters: {
+        type: 'object',
+        properties: {
+          files: {
+            type: 'array',
+            description: 'The files whose code was changed',
+            items: {
+              type: 'string'
+            }
+          }
+        },
+        required: ['files']
+      }
+    }];
+
+    const forceFunc = 'set_modified_files';
+    const res = await this.chatSingle(message, funcs, forceFunc);
+    const modifiedFiles = JSON.parse(res.arguments).files;
+    console.log(modifiedFiles)
+console.log(this.files.length, 'asd')
+    this.files.forEach(f => {
+      if (modifiedFiles.includes(f.name)) {
+        f.modified = true;
+      }
+    });
+  }
+
+  private async getSeparateModifications(modifications: string): Promise<any> {
+    this.files = this.files.filter(f => f.modified);
+    this.setModel(4);
+    this.files = await Promise.all(this.files.map(f => this.getSeparateModification(f, modifications)));
+    this.setModel(3.5);
+  }
+
+  private async getSeparateModification(file: File, modifications): Promise<File> {
+    const message = `In order to fulfill the user prompt "${this.initialPrompt}", the following modifications need to be done:\n---changes start---\n${modifications}\n---changes end---
+Extract the modifications for ${file.name} 1:1 from the above text. Only extract the modifications for this file and ignore the other files.`;
+
+    const funcs = [{
+      name: 'set_extracted_modification',
+      description: `Extract the modifications for ${file.name}`,
+      parameters: {
+        type: 'object',
+        properties: {
+          modifications: {
+            type: 'string',
+            description: `The modifications for ${file.name}`
+          }
+        },
+        required: ['modifications']
+      }
+    }];
+
+    const forceFunc = 'set_extracted_modification';
+    const res = await this.chatSingle(message, funcs, forceFunc);
+    file.modification = JSON.parse(res.arguments).modifications;
+    console.log(1, file.name);
+    console.log(file.modification)
+    console.log(2)
+    return file;
+  }
+
+  private async getModifiedFileContents(): Promise<any> {
+    this.setModel(4);
+    this.files = await Promise.all(this.files.map(f => this.getModifiedFileContent(f)));
+    this.setModel(3.5);
+  }
+
+  private async getModifiedFileContent(file: File): Promise<File> {
+    const message = `---${file.name} start---\n${file.content}\n---${file.name} end---\n\n
+---changes start---${file.modification}---changes end---
+Integrate these changes in the file above and write the new content of the entire file, meaning every line.`;
+
+    const funcs = [{
+      name: 'write_modified_file_content',
+      description: `Write the modified file content`,
+      parameters: {
+        type: 'object',
+        properties: {
+          content: {
+            type: 'string',
+            description: `The content of the modified file`
+          }
+        },
+        required: ['content']
+      }
+    }];
+
+    const forceFunc = 'write_modified_file_content';
+    const res = await this.chatSingle(message, funcs, forceFunc);
+    file.modifiedContent = JSON.parse(res.arguments).content;
+    console.log(3, file.name);
+    console.log(file.modifiedContent)
+    console.log(4)
+    return file;
+  }
+
+  private writeModifiedContents() {
+    this.files.forEach(f => {
+      try {
+        fs.writeFileSync(f.path, f.modifiedContent, 'utf8');
+      } catch (err) {
+        console.error(`Error writing to file: ${err}`);
+      }
+    });
   }
 }
