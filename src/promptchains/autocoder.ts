@@ -10,6 +10,7 @@ export default class Autocoder extends Communication {
   private initialPrompt: string;
   private files: File[];
   private zipName: string;
+  private repoStructure: string;
 
   constructor() {
     super();
@@ -17,6 +18,7 @@ export default class Autocoder extends Communication {
   }
 
   public async chain(prompt: string, zip: any): Promise<Buffer> {
+    // set up repository
     if (fs.existsSync('tmp')) {
       fs.rmSync('tmp', { recursive: true });
     }
@@ -27,26 +29,37 @@ export default class Autocoder extends Communication {
     this.filterFiles();
     this.getFileDependencies();
     await this.getDescriptions();
-    const structure = this.createRepoStructure();
+    this.createRepoStructure();
+
+    // rename files
+    this.setModel(4);
+    const renamesList = await this.getRenamesList();
+    await this.getRenames(renamesList);
+    this.setModel(3.5);
+
+    // mark relevant files
     const isLargeRepo = this.isLargeRepo();
     this.setModel(4);
 
     if (isLargeRepo) {
-      await this.markRelevantFilesQuick(structure);
-      this.files = this.files.filter(f => f.relevant);
-      await this.markRelevantFilesFull(structure);
+      await this.markRelevantFilesQuick();
+      this.files = this.files.filter(f => f.relevant || f.rename);
+      await this.markRelevantFilesFull();
     } else {
-      await this.markRelevantFilesFull(structure);
+      await this.markRelevantFilesFull();
     }
 
     this.setModel(3.5);
-    this.files = this.files.filter(f => f.relevant);
-    const modifications = await this.getModifications(structure); // use gpt-4-32k when released
-    console.log(modifications)
-    await this.getModifiedFilesList(modifications, structure);
+
+    // apply code changes
+    const modifications = await this.getModifications(); // use gpt-4-32k when released
+    await this.getModifiedFilesList(modifications);
+    this.setModel(4);
     await this.getSeparateModifications(modifications);
+    this.setModel(3.5);
     await this.getModifiedFileContents();
     this.writeModifiedContents();
+    await this.renameFiles();
     return this.zipRepo();
   }
 
@@ -93,6 +106,9 @@ export default class Autocoder extends Communication {
     return stat.isDirectory();
   }
 
+  /**
+   * currently only works for ts/js files
+   */
   private getFileDependencies(): void {
     this.files.forEach(f => {
       const dependencies = this.getDependencies(f.content);
@@ -164,7 +180,7 @@ Provide a 2-3 sentences description of what the file with above content does. Th
     return JSON.parse(res.arguments).description;
   }
 
-  private createRepoStructure(): string {
+  private createRepoStructure(): void {
     const rootNode = {};
 
     for (const file of this.files) {
@@ -178,6 +194,7 @@ Provide a 2-3 sentences description of what the file with above content does. Th
             delete copy.path;
             delete copy.name;
             delete copy.content;
+            delete copy.rename;
             currentNode[path] = copy;
           } else {
             currentNode[path] = {};
@@ -190,11 +207,95 @@ Provide a 2-3 sentences description of what the file with above content does. Th
       });
     }
 
-    return JSON.stringify(rootNode);
+    this.repoStructure = JSON.stringify(rootNode);
   }
 
-  private async markRelevantFilesQuick(structure: string): Promise<any> {
-    const message = `The structure of a repository is given as following:\n${structure}\n
+  private async getRenamesList(): Promise<string[]> {
+    const message = `The structure of a repository is given as following:\n${this.repoStructure}\n
+The task it to fulfill the user prompt "${this.initialPrompt}".
+If it is necessary to rename files, provide a list of files with their full names. If it is not necessary to rename files, provide an empty array.`;
+
+    const funcs = [{
+      name: 'rename_files',
+      description: 'Provide a list of files that need to be renamed, and if not necessary, an empty array',
+      parameters: {
+        type: 'object',
+        properties: {
+          files: {
+            type: 'array',
+            description: 'The files which need to be renamed. If none, use an empty array',
+            items: {
+              type: 'string'
+            }
+          }
+        },
+        required: ['files']
+      }
+    }];
+
+    const forceFunc = 'rename_files';
+    const res = await this.chatSingle(message, funcs, forceFunc);
+    const renames = JSON.parse(res.arguments).files;
+    const final = renames.map(f => path.basename(f));
+    console.log(final);
+    return final;
+  }
+
+  private async getRenames(renamesList: string[]): Promise<any> {
+    this.files = await Promise.all(this.files.map(async f => {
+      if (renamesList.includes(f.name)) {
+        f.rename = await this.getRename(f);
+      }
+
+      return f;
+    }));
+  }
+
+  private async getRename(file: File): Promise<string> {
+    const message = `The structure of a repository is given as following:\n${this.repoStructure}\n
+The task it to fulfill the user prompt "${this.initialPrompt}".
+It has been determined that ${file.name} needs to be renamed. Provide the new name of the file.`;
+
+    const funcs = [{
+      name: 'rename_file',
+      description: `Rename ${file.name}`,
+      parameters: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            description: 'The new name of the file'
+          }
+        },
+        required: ['name']
+      }
+    }];
+
+    const forceFunc = 'rename_file';
+    const res = await this.chatSingle(message, funcs, forceFunc);
+    return JSON.parse(res.arguments).name;
+  }
+
+  private async renameFiles() {
+    await Promise.all(this.files.map(async f => {
+      if (f.rename) {
+        const newPath = path.join(path.dirname(f.path), f.rename);
+
+        try {
+          await fs.promises.rename(f.path, newPath);
+          f.path = newPath;
+          console.log(`${f.name} renamed`)
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      return f;
+    }));
+  }
+
+  private async markRelevantFilesQuick(): Promise<any> {
+    const message = `The structure of a repository is given as following:\n${this.repoStructure}\n
 In order to fulfill the prompt "${this.initialPrompt}", you must select a list of files which are potentially relevant for this prompt.
 Meaning they potentially need to be changed in order to fulfill the prompt. Each item in the array must have the notation [file name].[file extension]`;
 
@@ -221,21 +322,24 @@ Meaning they potentially need to be changed in order to fulfill the prompt. Each
     const relevant: string[] = JSON.parse(res.arguments).files;
 
     this.files.forEach(f => {
-      if (relevant.includes(f.name)) {
+      if (relevant.includes(f.name) || f.rename) {
         f.relevant = true;
       }
     });
   }
 
-  private async markRelevantFilesFull(structure: string): Promise<any> {
+  private async markRelevantFilesFull(): Promise<any> {
     this.files = await Promise.all(this.files.map(async f => {
-      f.relevant = await this.isRelevant(f, structure);
+      if (f.relevant) {
+        f.relevant = await this.isRelevant(f);
+      }
+
       return f;
     }));
   }
 
-  private async isRelevant(file: File, structure: string): Promise<boolean> {
-    const message = `The structure of a repository is given as following:\n${structure}\n
+  private async isRelevant(file: File): Promise<boolean> {
+    const message = `The structure of a repository is given as following:\n${this.repoStructure}\n
 We consider one file at a time. Consider the content of the current file  ${file.name}:\nSTART OF FILE\n${file.content}\nEND OF FILE
 Is it necessary to do code changes in this file in order to fulfill the user prompt "${this.initialPrompt}"? If it is sufficient to do the change in other files, don't flag it.`;
 
@@ -259,22 +363,25 @@ Is it necessary to do code changes in this file in order to fulfill the user pro
     return JSON.parse(res.arguments).change;
   }
 
-  private async getModifications(structure: string): Promise<string> {
+  private async getModifications(): Promise<string> {
+    const renameList = this.files.filter(f => f.rename).reduce((a, c) => a += `${c.name} to ${c.rename}\n`, '');
+
     const message = `The following user request is given: "${this.initialPrompt}"
-The structure of a repository is given as following:\n${structure}\n
+The structure of a repository is given as following:\n${this.repoStructure}\n
+The following files have been renamed, consider that when these files are referenced in the code:\n${renameList}
 The contents of the relevant files are as follows:
 ${this.createFileContentSummaries(this.files)}
-Output all the changes required in order to fulfill the request "${this.initialPrompt}". Don't output pseudocode, output all code that is changed, no missing parts. Only output the code changes in the format: [name of file]\n[changes]`;
+Output all the code changes required in order to fulfill the request "${this.initialPrompt}". Don't output pseudocode, output all code that is changed, no missing parts. File renaming is already done. Only output the code changes in the format: [name of file]\n[changes]`;
 
     return this.chatSingle(message);
   }
 
   private createFileContentSummaries(files: File[]): string {
-    return files.reduce((summary, f) => summary + `\n---${f.name} start---\n${f.content}\n---${f.name} end---\n\n`, '');
+    return files.filter(f => f.relevant).reduce((summary, f) => summary + `\n---${f.name} start---\n${f.content}\n---${f.name} end---\n\n`, '');
   }
 
-  private async getModifiedFilesList(modifications: string, structure: string): Promise<any> {
-    const message = `The structure of a repository is given as following:\n${structure}\n
+  private async getModifiedFilesList(modifications: string): Promise<any> {
+    const message = `The structure of a repository is given as following:\n${this.repoStructure}\n
 In order to fulfill the prompt "${this.initialPrompt}" the following changes were proposed:\n---changes start---\n${modifications}\n---changes end---
 Call set_modified_files() with an array of all modified files. Each file needs to have the notation [file name].[file extension]`;
 
@@ -309,10 +416,9 @@ Call set_modified_files() with an array of all modified files. Each file needs t
   }
 
   private async getSeparateModifications(modifications: string): Promise<any> {
-    this.files = this.files.filter(f => f.modified);
-    this.setModel(4);
-    this.files = await Promise.all(this.files.map(f => this.getSeparateModification(f, modifications)));
-    this.setModel(3.5);
+    this.files = await Promise.all(this.files.map(f => {
+      return f.modified ? this.getSeparateModification(f, modifications) : f;
+    }));
   }
 
   private async getSeparateModification(file: File, modifications): Promise<File> {
@@ -379,7 +485,7 @@ Integrate these changes in the file above and write the new content of the entir
   }
 
   private writeModifiedContents() {
-    this.files.forEach(f => {
+    this.files.filter(f => f.modifiedContent).forEach(f => {
       try {
         fs.writeFileSync(f.path, f.modifiedContent, 'utf8');
       } catch (err) {

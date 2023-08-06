@@ -9,13 +9,21 @@ export default class OpenAi {
   public count = 0;
   public apiKey: string;
   private baseUrl = 'https://api.openai.com/v1';
+  private tokenLimitGpt4 = 40000;
+  private tokensGpt4Total = 0;
+  private tokensGpt4 = 0;
 
   // https://platform.openai.com/docs/api-reference/chat
   public async postCompletionChat(messages: any[], retryCounter?: number, funcs?: any[], forceFunc?: string): Promise<any> {
-    console.log('POST completion');
     const url = this.baseUrl + '/chat/completions';
-    const tokenCount = this.countTokens(JSON.stringify(messages) + (funcs ? JSON.stringify(funcs) : ''));
-    const model = this.model === 'gpt-4' || tokenCount <= 3500 ? this.model : 'gpt-3.5-turbo-16k';
+    const requestTokens = this.countTokens(JSON.stringify(messages) + (funcs ? JSON.stringify(funcs) : ''));
+    const model = this.model === 'gpt-4' || requestTokens <= 3000 ? this.model : 'gpt-3.5-turbo-16k';
+
+    if (this.model === 'gpt-4') {
+      console.log(`${model} request: ${requestTokens} tokens, total gpt-4 tokens: ${this.tokensGpt4 + requestTokens}`);
+    } else {
+      console.log(`${model} request: ${requestTokens} tokens`);
+    }
 
     const body = {
       model,
@@ -41,8 +49,20 @@ export default class OpenAi {
     this.count++;
 
     try {
-      const res = await axios.post(url, body, { headers: headers });
-      const message = res.data.choices[0].message;
+      if (this.model === 'gpt-4' && this.tokensGpt4 + requestTokens + 100 > this.tokenLimitGpt4) {
+        console.log('Token limit reached. Waiting 1 minute.')
+        await this.sleep(60000);
+        this.tokensGpt4 = 0;
+      }
+
+      const res = (await axios.post(url, body, { headers: headers })).data;
+      const message = res.choices[0].message;
+
+      if (this.model === 'gpt-4') {
+        this.tokensGpt4 += res.usage.total_tokens;
+        this.tokensGpt4Total += res.usage.total_tokens;
+      }
+
       return message.content ?? message.function_call;
     } catch (err) {
       if (retryCounter !== undefined) retryCounter++; else retryCounter = 0;
@@ -66,5 +86,9 @@ export default class OpenAi {
 
   private countTokens(str: string) {
     return encode(str).length;
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }

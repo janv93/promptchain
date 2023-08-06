@@ -9,13 +9,14 @@ export interface Step {
 };
 
 export interface File {
-  path: string;
-  name: string;
+  path: string; // tmp\\src\\app\\app-routing.module.ts
+  name: string; // app-routing.module.ts
   content: string;
   description?: string;
-  dependencies?: string[];
+  dependencies?: string[]; // ['home-page', 'demo-page']
   relevant?: boolean;
   modified?: boolean;
   modification?: string;
   modifiedContent?: string;
+  rename?: string;  // new-name.ts
 }
