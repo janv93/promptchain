@@ -3,8 +3,8 @@ import os from 'os';
 import path from 'path';
 import { exec } from 'child_process';
 import util from 'util';
-import Communication from '../communication';
-import { File } from '../interfaces';
+import Communication from '../../communication';
+import { File } from '../../interfaces';
 
 export default class Autocoder extends Communication {
   private initialPrompt: string;
@@ -12,8 +12,9 @@ export default class Autocoder extends Communication {
   private zipName: string;
   private repoStructure: string;
 
-  constructor() {
+  constructor(apiKey: string) {
     super();
+    this.openAi.apiKey = apiKey;
     this.systemMessage = `You are an AI language model and coding expert.`;
   }
 
@@ -365,7 +366,7 @@ Is it necessary to do code changes in this file in order to fulfill the user pro
 
   private async getModifications(): Promise<string> {
     const renameList = this.files.filter(f => f.rename).reduce((a, c) => a += `${c.name} to ${c.rename}\n`, '');
-
+console.log(renameList)
     const message = `The following user request is given: "${this.initialPrompt}"
 The structure of a repository is given as following:\n${this.repoStructure}\n
 The following files have been renamed, consider that when these files are referenced in the code:\n${renameList}

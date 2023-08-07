@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import BrainGpt from './promptchains/braingpt';
 import Conversaition from './promptchains/conversaition';
-import Autocoder from './promptchains/autocoder';
+import Autocoder from './promptchains/autocoder/autocoder';
 
 let id = 1;
 let conversaitions: Map<number, Conversaition> = new Map();
@@ -49,7 +49,7 @@ router.get('/conversaition/:id', (req, res) => {
 });
 
 router.post('/autocoder', async (req: Request, res: Response) => {
-  const autocoder = new Autocoder();
+  const autocoder = new Autocoder(req.body.apiKey);
   const response = await autocoder.chain(req.body.prompt, (req as any).files[0]);
   res.setHeader('Content-Type', 'application/zip');
   res.setHeader('Content-Disposition', `attachment; filename=${(req as any).files[0].originalname}`);
