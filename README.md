@@ -2,7 +2,7 @@
 ## Single/Multi agent LLM feedback loop architectures
 
 The goal of this project is exploring different ideas found in the /ideas folder to make agents similar to AutoGPT/babyagi.
-There are proofs of concept and not meant to become commercial products.
+They are proofs of concept and not meant to become commercial products.
 
 ### ConversAItion
 
