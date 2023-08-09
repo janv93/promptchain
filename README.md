@@ -6,7 +6,7 @@ They are proofs of concept and not meant to become commercial products.
 
 ### ConversAItion
 
-https://janv.dev/demo
+https://www.janv.dev/demo
 
 Two agents, Challenger and Challengee talking to each other to fulfill a user prompt. Challenger challenges the Challengee by checking its reponses and asking for refinement. Challengee answers the prompt and can ask user for clarification. Uses a GET stream.
 
