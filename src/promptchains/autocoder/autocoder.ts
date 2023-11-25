@@ -33,14 +33,14 @@ export default class Autocoder extends Communication {
     this.createRepoStructure();
 
     // rename files
-    this.setModel(4);
+    this.setModel(4.5);
     const renamesList = await this.getRenamesList();
     await this.getRenames(renamesList);
     this.setModel(3.5);
 
     // mark relevant files
     const isLargeRepo = this.isLargeRepo();
-    this.setModel(4);
+    this.setModel(4.5);
 
     if (isLargeRepo) {
       await this.markRelevantFilesQuick();
@@ -55,7 +55,7 @@ export default class Autocoder extends Communication {
     // apply code changes
     const modifications = await this.getModifications(); // use gpt-4-32k when released
     await this.getModifiedFilesList(modifications);
-    this.setModel(4);
+    this.setModel(4.5);
     await this.getSeparateModifications(modifications);
     this.setModel(3.5);
     await this.getModifiedFileContents();
@@ -238,6 +238,7 @@ If it is necessary to rename files, provide a list of files with their full name
     const res = await this.chatSingle(message, funcs, forceFunc);
     const renames = JSON.parse(res.arguments).files;
     const final = renames.map(f => path.basename(f));
+    console.log('renames:')
     console.log(final);
     return final;
   }
@@ -366,7 +367,7 @@ Is it necessary to do code changes in this file in order to fulfill the user pro
 
   private async getModifications(): Promise<string> {
     const renameList = this.files.filter(f => f.rename).reduce((a, c) => a += `${c.name} to ${c.rename}\n`, '');
-console.log(renameList)
+
     const message = `The following user request is given: "${this.initialPrompt}"
 The structure of a repository is given as following:\n${this.repoStructure}\n
 The following files have been renamed, consider that when these files are referenced in the code:\n${renameList}
@@ -444,14 +445,14 @@ Extract the modifications for ${file.name} 1:1 from the above text. Only extract
     const forceFunc = 'set_extracted_modification';
     const res = await this.chatSingle(message, funcs, forceFunc);
     file.modification = JSON.parse(res.arguments).modifications;
-    console.log(1, file.name);
+    console.log(file.name);
     console.log(file.modification)
-    console.log(2)
+    console.log()
     return file;
   }
 
   private async getModifiedFileContents(): Promise<any> {
-    this.setModel(4);
+    this.setModel(4.5);
     this.files = await Promise.all(this.files.map(f => this.getModifiedFileContent(f)));
     this.setModel(3.5);
   }
@@ -479,9 +480,9 @@ Integrate these changes in the file above and write the new content of the entir
     const forceFunc = 'write_modified_file_content';
     const res = await this.chatSingle(message, funcs, forceFunc);
     file.modifiedContent = JSON.parse(res.arguments).content;
-    console.log(3, file.name);
+    console.log(file.name);
     console.log(file.modifiedContent)
-    console.log(4)
+    console.log()
     return file;
   }
 

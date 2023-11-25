@@ -13,6 +13,7 @@ export default class Communication {
     switch(model) {
       case 3.5: this.openAi.model = 'gpt-3.5-turbo'; break;
       case 4: this.openAi.model = 'gpt-4'; break;
+      case 4.5: this.openAi.model = 'gpt-4-1106-preview'; break;
     }
   }
 

@@ -17,12 +17,17 @@ export default class OpenAi {
   public async postCompletionChat(messages: any[], retryCounter?: number, funcs?: any[], forceFunc?: string): Promise<any> {
     const url = this.baseUrl + '/chat/completions';
     const requestTokens = this.countTokens(JSON.stringify(messages) + (funcs ? JSON.stringify(funcs) : ''));
-    const model = this.model === 'gpt-4' || requestTokens <= 3000 ? this.model : 'gpt-3.5-turbo-16k';
+
+    let model = this.model;
+
+    if (model === 'gpt-3.5-turbo' && requestTokens > 3000 && requestTokens < 15000) {
+      model = 'gpt-3.5-turbo-16k';
+    }
 
     if (this.model === 'gpt-4') {
-      console.log(`${model} request: ${requestTokens} tokens, total gpt-4 tokens: ${this.tokensGpt4 + requestTokens}`);
+      console.log(`${this.model} request: ${requestTokens} tokens, total gpt-4 tokens: ${this.tokensGpt4 + requestTokens}`);
     } else {
-      console.log(`${model} request: ${requestTokens} tokens`);
+      console.log(`${this.model} request: ${requestTokens} tokens`);
     }
 
     const body = {
