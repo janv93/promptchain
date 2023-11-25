@@ -18,7 +18,7 @@ export default class Communication {
   }
 
   protected countTokens(str: string) {
-    if (str.length > 100000) return 50000;
+    if (str.length > 100000) return str.length / 2;
     return encode(str).length;
   }
 
