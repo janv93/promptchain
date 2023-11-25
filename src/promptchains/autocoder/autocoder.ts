@@ -50,7 +50,7 @@ export default class Autocoder extends Communication {
       await this.markRelevantFilesFull();
     }
 
-    this.setModel(3.5);
+    this.setModel(4.5);
 
     // apply code changes
     const modifications = await this.getModifications(); // use gpt-4-32k when released
