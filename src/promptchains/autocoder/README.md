@@ -15,7 +15,7 @@ Takes a prompt and .zip file, changes code, sends back modified zip.
 
 ## Cost
 
-During testing with normal sized repos, total cost would be around 1,50$, very large repos could cost up to 3$, smaller ones <1$.\
+For [this](https://github.com/janv93/large-trading-api) repository the cost for small feature change is about 0.70$.\
 Because of token limit, the agent may have to pause for a minute during the processing. Total run can take 30 seconds to 2 minutes.
 
 ## How it works
