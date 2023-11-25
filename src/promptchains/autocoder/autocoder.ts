@@ -92,8 +92,12 @@ export default class Autocoder extends Communication {
   }
 
   private filterFiles() {
+    const illegalFiles = ['package-lock.json'];
+
     this.files = this.files.filter((f: File) => {
-      return f.name !== 'package-lock.json';
+      const aboveTokenLimit = this.countTokens(f.content) > 15000;
+      const isIllegal = illegalFiles.includes(f.name);
+      return !aboveTokenLimit && !isIllegal;
     });
   }
 
