@@ -24,10 +24,10 @@ export default class OpenAi {
       model = 'gpt-3.5-turbo-16k';
     }
 
-    if (this.model === 'gpt-4') {
-      console.log(`${this.model} request: ${requestTokens} tokens, total gpt-4 tokens: ${this.tokensGpt4 + requestTokens}`);
+    if (model === 'gpt-4') {
+      console.log(`${model} request: ${requestTokens} tokens, total gpt-4 tokens: ${this.tokensGpt4 + requestTokens}`);
     } else {
-      console.log(`${this.model} request: ${requestTokens} tokens`);
+      console.log(`${model} request: ${requestTokens} tokens`);
     }
 
     const body = {
