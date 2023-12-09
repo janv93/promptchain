@@ -23,7 +23,7 @@ Because of token limit, the agent may have to pause for a minute during the proc
 1. Creates a json abstraction of the repository as context for the model - contains the structure and descriptions of every file
 2. Checks if files need renaming
 3. Checks which files need a code change
-4. Includes all the files and their content in one large request for GPT-3.5-16k
+4. Includes all the files and their content in one large request for GPT-4-turbo
 5. Receives all code changes as plain text
 6. Uses the model to split changes into segments for each file
 7. Applies changes to each file
