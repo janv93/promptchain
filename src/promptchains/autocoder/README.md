@@ -20,7 +20,7 @@ https://github.com/janv93/large-trading-api/commit/73d177905944de959fc67d6e736ca
 
 ## Cost
 
-For [this](https://github.com/janv93/large-trading-api) repository the cost for small feature change is about 0.70$.\
+For [this](https://github.com/janv93/large-trading-api) repository the cost for small feature change is about 0.30$.\
 Because of token limit, the agent may have to pause for a minute during the processing. Total run can take 30 seconds to 2 minutes.
 
 ## How it works
