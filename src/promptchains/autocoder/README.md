@@ -4,7 +4,7 @@ Takes a prompt and .zip file, changes code, sends back modified zip.
 
 ## Example
 
-The prompt "In the Logger, add return types. In the Dca algo, add some comments" leads to this diff:\
+In [this](https://github.com/janv93/large-trading-api) repository, the prompt "In the Logger, add return types. In the Dca algo, add some comments" leads to this diff:\
 https://github.com/janv93/large-trading-api/commit/73d177905944de959fc67d6e736ca5bd59f6cdfc
 
 ## How to use
