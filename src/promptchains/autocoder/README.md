@@ -26,5 +26,5 @@ Because of token limit, the agent may have to pause for a minute during the proc
 4. Includes all the files and their content in one large request for GPT-4-turbo
 5. Receives all code changes as plain text
 6. Uses the model to split changes into segments for each file
-7. Applies changes to each file
+7. Applies changes to each source file
 8. Writes all the changes back to the repository
