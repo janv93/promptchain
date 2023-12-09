@@ -2,6 +2,11 @@
 
 Takes a prompt and .zip file, changes code, sends back modified zip.
 
+## Example
+
+The prompt "Refactor the logger and add some comments to the Dca algorithm." leads to this diff:
+https://github.com/janv93/large-trading-api/commit/5207835f441d4bedcf9e321ae0ca0471bf364369
+
 ## How to use
 
 1. npm start
