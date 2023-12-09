@@ -45,11 +45,11 @@ export default class Autocoder extends Communication {
     if (isLargeRepo) {
       await this.markRelevantFilesQuick();
       this.files = this.files.filter(f => f.relevant || f.rename);
-      console.log(this.files.map(file => file.name))
       await this.markRelevantFilesFull();
     } else {
       await this.markRelevantFilesFull();
     }
+
     console.log(this.files.map(file => file.name))
 
     this.setModel(4.5);
