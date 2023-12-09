@@ -27,4 +27,3 @@ Because of token limit, the agent may have to pause for a minute during the proc
 5. Receives all code changes as plain text
 6. Uses the model to split changes into segments for each file
 7. Applies changes to each source file
-8. Writes all the changes back to the repository
