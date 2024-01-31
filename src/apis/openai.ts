@@ -3,8 +3,6 @@ import { encode } from 'gpt-3-encoder';
 
 export default class OpenAi {
   // CAREFUL - high cost - set usage limits
-  // gpt-3.5-turbo, gpt-4, gpt-4-32k
-  // 0.002, 0.03-0.06, 0.06-0.12 $ per 1k tokens
   public model = 'gpt-3.5-turbo';
   public count = 0;
   public apiKey: string;

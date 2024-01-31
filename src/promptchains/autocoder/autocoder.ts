@@ -55,7 +55,7 @@ export default class Autocoder extends Communication {
     this.setModel(4.5);
 
     // apply code changes
-    const modifications = await this.getModifications(); // use gpt-4-32k when released
+    const modifications = await this.getModifications();
     await this.getModifiedFilesList(modifications);
     this.setModel(4.5);
     await this.getSeparateModifications(modifications);
