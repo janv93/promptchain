@@ -168,7 +168,7 @@ Only output the single word string, nothing before or after the word.`
     });
 
     message += 'Which approach is the best to solve the prompt? You must pick one. Only output the approach number, nothing else:';
-    this.setModel(4);
+    this.setModel(4.5);
     const res = await this.chatSingle(message);
     this.setModel(3.5);
     const number = parseInt(res.match(/\d+/)?.[0] || '1');
@@ -315,7 +315,7 @@ Consider all information given, and summarize the conclusions in the information
     const answerMessage = `${summarizeMessage}
 If the prompt requires you to speculate, speculate. You have to answer the prompt.`;
 
-    this.setModel(4);
+    this.setModel(4.5);
     this.tokenLimit = 4000;
     const summary = await this.summarizeTexts(this.bestApproachResults, summarizeMessage);
     this.answer = await this.chatSingle(`${summary}\n${answerMessage}`);
