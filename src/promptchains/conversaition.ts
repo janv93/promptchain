@@ -22,7 +22,7 @@ export default class Conversaition extends Communication {
     this.openAi.apiKey = apiKey;
     this.response = response;
     this.prompt = prompt;
-    this.setModel(4);
+    this.setModel(4.5);
     this.chain();
     console.log('Received prompt "' + prompt + '"');
     this.startKeepAlive();
